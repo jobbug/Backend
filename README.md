@@ -3,8 +3,8 @@
 ## 🔀 Branch Rule
 - Github Projects를 이용하여 Issue를 관리합니다.
 - 각자의 feature branch에서 작업한 후, main branch로 merge합니다.
-- {브랜치 종류}/{이슈 번호} 순으로 작명합니다.
-- `ex) feature/#3`
+- {commit명}/{이슈 번호} 순으로 작명합니다.
+- `ex) feat/#3`
 
 ## 💬 Commit Convention
 | commit 명   | commit 규칙                                              |
