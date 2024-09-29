@@ -8,6 +8,7 @@ public class UserConverter {
         return UserRegisterResponse.builder()
                 .name(user.getName())
                 .email(user.getEmail())
+                .nickname(user.getNickname())
                 .userId(user.getId())
                 .profile(user.getProfile())
                 .accessToken(accessToken)
