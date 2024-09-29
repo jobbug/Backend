@@ -7,8 +7,12 @@ import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.model.TokenException;
 import com.example.jobbug.global.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import static com.example.jobbug.global.exception.enums.ErrorCode.INVALID_TOKEN_EXCEPTION;
 
@@ -45,6 +49,17 @@ public class UserService {
 
         return UserConverter.toUserRegisterResponse(newUser, accessToken);
     }
+
+    // 쿠키를 삭제하는 메서드
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("Authorization", null);
+        cookie.setPath("/");  // 삭제할 쿠키의 경로
+        cookie.setMaxAge(0);  // 만료시간을 0으로 설정
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);  // HTTPS 사용 시 true로 설정
+        response.addCookie(cookie);
+    }
+
 
 }
 
