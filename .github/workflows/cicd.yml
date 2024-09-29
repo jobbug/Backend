@@ -57,10 +57,10 @@ jobs:
         script: |
             cd ~
             echo "Login to docker hub"
-            if echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin; then
+            if echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin; then
                 echo "Docker login successful."
             else
                 echo "Docker login failed. Exiting..."
                 exit 1
             fi
-            ./deploy.sh ${{ secrets.DOCKER_PASSWORD }}
+            ./deploy.sh
