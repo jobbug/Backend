@@ -8,12 +8,15 @@ import com.example.jobbug.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -36,11 +39,15 @@ public class SecurityConfig {
      */
 
     // 관리자 권한
-    private final String[] adminUrl = {"/admin/**"};
+    private final RequestMatcher[] adminRequestMatchers = {
+            new AntPathRequestMatcher("/admin/**")
+    };
 
     // 아무나 접근 가능한 URI
-    private final String[] permitAllUrl = {
-            "/api/user/register", "/auth/google/**"
+    private final RequestMatcher[] permitAllUrlRequestMatchers = {
+            new AntPathRequestMatcher("/", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/api/user/register"),
+            new AntPathRequestMatcher("/auth/google/**")
     };
 
 //    // 인증되지 않은 사용자만 접근 가능한 URI
@@ -57,10 +64,10 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 비활성화
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(auth -> auth // 접근 uri 권한 관리.requestMatchers("/auth/google/**").permitAll()
-                        .requestMatchers(adminUrl).hasAnyRole("ADMIN")
-                        .requestMatchers(permitAllUrl).permitAll()
+                                .requestMatchers(adminRequestMatchers).hasAnyRole("ADMIN")
+                                .requestMatchers(permitAllUrlRequestMatchers).permitAll()
 //                        .requestMatchers(anonymousUrl).anonymous()
-                        .anyRequest().authenticated() // 이 외의 url은 인증받은 사용자만 접근 가능
+                                .anyRequest().authenticated() // 이 외의 url은 인증받은 사용자만 접근 가능
                 )
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuthLoginSuccessHandler) // OAuth2 로그인 성공 핸들러 설정
