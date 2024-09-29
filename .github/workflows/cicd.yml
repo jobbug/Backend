@@ -56,4 +56,12 @@ jobs:
         key: ${{ secrets.RELEASE_KEY }}
         script: |
             cd ~
-            ./deploy.sh
+            echo "Login to Docker Hub"
+            echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            if [ $? -ne 0 ]; then
+                echo "Docker login failed. Exiting..."
+                exit 1
+            else
+                echo "Docker login successful."
+            fi
+            ./deploy.sh ${{ secrets.DOCKER_PASSWORD }}
