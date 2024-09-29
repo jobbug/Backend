@@ -27,7 +27,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         if (token != null && jwtUtil.isAccessTokenValid(token)) {
             String email = jwtUtil.getEmailFromToken(token); // 이메일 추출
-            CustomOAuth2User customOAuth2User = customOAuth2UserService.loadUserByEmail(email); // 이메일로 사용자 정보 로드
+            CustomOAuth2User customOAuth2User = customOAuth2UserService.loadUserByUsername(email); // 이메일로 사용자 정보 로드
 
             if (customOAuth2User != null) {
                 // 사용자 정보로 인증 객체 생성 및 SecurityContext에 설정
@@ -68,4 +68,5 @@ public class JWTFilter extends OncePerRequestFilter {
 
         return null;
     }
+
 }
