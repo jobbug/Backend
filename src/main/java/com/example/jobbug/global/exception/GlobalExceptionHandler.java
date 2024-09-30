@@ -13,7 +13,7 @@ import java.io.IOException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ApiResponse handleException(Exception e) {
+    public ResponseEntity<?> handleException(Exception e) {
         e.printStackTrace();
         return ErrorResponse.error(ErrorCode.INTERNAL_SERVER_EXCEPTION);
     }

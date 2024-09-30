@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ApiResponse registerUser(@RequestHeader String registerToken, @RequestBody UserRegisterRequest request) {
+    public ResponseEntity<?> registerUser(@RequestHeader String registerToken, @RequestBody UserRegisterRequest request) {
         try {
             return SuccessResponse.success(REGISTER_SUCCESS, userService.registerUser(registerToken, request));
         } catch (TokenException e) {
