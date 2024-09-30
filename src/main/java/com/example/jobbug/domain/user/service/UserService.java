@@ -5,43 +5,45 @@ import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
 import com.example.jobbug.domain.user.dto.response.UserRegisterResponse;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
+import com.example.jobbug.global.exception.model.S3Exception;
 import com.example.jobbug.global.exception.model.TokenException;
 import com.example.jobbug.global.jwt.JwtUtil;
+import com.example.jobbug.global.s3.S3Service;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 import static com.example.jobbug.global.exception.enums.ErrorCode.INVALID_TOKEN_EXCEPTION;
+import static com.example.jobbug.global.exception.enums.ErrorCode.S3_UPLOAD_FAILED;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
-    // 사용자 등록 메서드
-    public UserRegisterResponse registerUser(String registerToken, UserRegisterRequest request) {
-        // 레지스터 토큰 유효성 검사
-        if (!jwtUtil.isRegisterTokenValid(registerToken)) {
-            throw new TokenException(INVALID_TOKEN_EXCEPTION);
-        }
+    // 회원가입
+    @Transactional
+    public UserRegisterResponse registerUser(String registerToken, MultipartFile profileImage, UserRegisterRequest request) {
+        validateToken(registerToken);
 
-        User newUser = User.builder()
-                .providerId(jwtUtil.getProviderIdFromToken(registerToken))
-                .email(jwtUtil.getEmailFromToken(registerToken))
-                .name(request.getName())
-                .nickname(request.getNickname())
-                .phone(request.getPhone())
-                .addr(request.getAddr())
-                .detail_addr(request.getDetailAddr())
-                .profile(request.getProfile())
-                .role("ROLE_USER")
-                .build();
+        String providerId = jwtUtil.getProviderIdFromToken(registerToken);
+        String email = jwtUtil.getEmailFromToken(registerToken);
 
-        // 사용자 저장
+        // 프로필 이미지 처리
+        String profileImageUrl = handleProfileImage(profileImage);
+
+        // 새로운 User 생성 및 저장
+        User newUser = User.of(providerId, email, request, profileImageUrl);
         userRepository.save(newUser);
 
         // 액세스 토큰 발급
@@ -50,7 +52,8 @@ public class UserService {
         return UserConverter.toUserRegisterResponse(newUser, accessToken);
     }
 
-    // 쿠키를 삭제하는 메서드
+    // 로그아웃
+    @Transactional
     public void logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("Authorization", null);
         cookie.setPath("/");  // 삭제할 쿠키의 경로
@@ -60,6 +63,28 @@ public class UserService {
         response.addCookie(cookie);
     }
 
+    // 토큰 유효성 검사
+    private void validateToken(String registerToken) {
+        if (!jwtUtil.isRegisterTokenValid(registerToken)) {
+            throw new TokenException(INVALID_TOKEN_EXCEPTION);
+        }
+    }
+
+    // 프로필 이미지 처리
+    private String handleProfileImage(MultipartFile profileImage) {
+        if (profileImage != null && !profileImage.isEmpty()) {
+            try {
+                log.info("프로필 이미지를 S3에 업로드 중입니다...");
+                String uploadedUrl = s3Service.upload(profileImage, "profile");
+                log.info("프로필 이미지 업로드 성공: {}", uploadedUrl);
+                return uploadedUrl;
+            } catch (IllegalArgumentException | IOException e) {
+                log.error("S3 업로드 중 오류 발생: {}", e.getMessage());
+                throw new S3Exception(S3_UPLOAD_FAILED);
+            }
+        }
+        // 기본 프로필 이미지 설정
+        return "https://jobbug-bucket.s3.ap-northeast-2.amazonaws.com/defaultprofile.svg";
+    }
 
 }
-
