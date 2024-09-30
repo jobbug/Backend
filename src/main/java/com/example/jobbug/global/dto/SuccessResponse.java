@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.http.ResponseEntity;
 
 @Getter
 @ToString
@@ -14,7 +15,11 @@ public class SuccessResponse<T> extends ApiResponse{
     private final String message;
     private final T data;
 
-    public static <T> SuccessResponse<T> success(SuccessCode successCode, T data) {
-        return new SuccessResponse(successCode.getHttpStatus().value(), successCode.getMessage(), data);
+    public static <T> ResponseEntity<?> success(SuccessCode successCode, T data) {
+        return ResponseEntity.status(successCode.getHttpStatus()).body(new SuccessResponse(successCode.getHttpStatus().value(), successCode.getMessage(), data));
+    }
+
+    public static <T> ResponseEntity<?> success(SuccessCode successCode, T data, String message) {
+        return ResponseEntity.status(successCode.getHttpStatus()).body(new SuccessResponse(successCode.getHttpStatus().value(), message, data));
     }
 }

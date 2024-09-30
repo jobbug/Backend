@@ -23,7 +23,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(value = "/register", consumes = {"multipart/form-data"})
-    public ApiResponse registerUser(
+    public ResponseEntity<?> registerUser(
             @RequestHeader String registerToken,
             @RequestPart(value = "image") MultipartFile profileImage,
             @RequestPart(value = "userInfo") UserRegisterRequest request) {
