@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.example.jobbug.global.exception.enums.SuccessCode.LOGOUT_SUCCESS;
 import static com.example.jobbug.global.exception.enums.SuccessCode.REGISTER_SUCCESS;
@@ -21,10 +22,13 @@ import static com.example.jobbug.global.exception.enums.SuccessCode.REGISTER_SUC
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ApiResponse registerUser(@RequestHeader String registerToken, @RequestBody UserRegisterRequest request) {
+    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    public ResponseEntity<?> registerUser(
+            @RequestHeader String registerToken,
+            @RequestPart(value = "image") MultipartFile profileImage,
+            @RequestPart(value = "userInfo") UserRegisterRequest request) {
         try {
-            return SuccessResponse.success(REGISTER_SUCCESS, userService.registerUser(registerToken, request));
+            return SuccessResponse.success(REGISTER_SUCCESS, userService.registerUser(registerToken, profileImage, request));
         } catch (TokenException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
