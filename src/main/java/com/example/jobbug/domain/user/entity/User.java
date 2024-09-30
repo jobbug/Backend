@@ -4,6 +4,7 @@ import com.example.jobbug.domain.badge.entity.Badge;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.review.entity.Review;
+import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -76,5 +77,19 @@ public class User {
         this.detail_addr = detail_addr;
         this.profile = profile;
         this.role = role;
+    }
+
+    public static User of(String providerId, String email, UserRegisterRequest request, String profileImageUrl) {
+        return User.builder()
+                .providerId(providerId)
+                .email(email)
+                .name(request.getName())
+                .nickname(request.getNickname())
+                .phone(request.getPhone())
+                .addr(request.getAddr())
+                .detail_addr(request.getDetailAddr())
+                .profile(profileImageUrl)
+                .role("ROLE_USER")
+                .build();
     }
 }
