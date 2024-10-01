@@ -48,7 +48,7 @@ public class UserController {
     public String test(
             @AuthenticationPrincipal String userId
     ) {
-        return "test " + userId;
+        return "test " + Long.parseLong(userId);
     }
 }
 
