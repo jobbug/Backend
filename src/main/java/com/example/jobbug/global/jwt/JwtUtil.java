@@ -31,10 +31,10 @@ public class JwtUtil {
     }
 
     // 액세스 토큰 발급 메서드
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(String userId) {
         log.info("액세스 토큰이 발행되었습니다.");
         return Jwts.builder()
-                .claim("email", email)
+                .claim("userId", userId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
                 .signWith(this.getSigningKey())
@@ -55,7 +55,7 @@ public class JwtUtil {
 
     // 액세스 토큰 유효성 검사
     public boolean isAccessTokenValid(String token) {
-        return isTokenValid(token, "email");
+        return isTokenValid(token, "userId");
     }
 
     // 레지스터 토큰 유효성 검사
@@ -119,6 +119,21 @@ public class JwtUtil {
                     .parseSignedClaims(token)
                     .getPayload()
                     .get("email", String.class);
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("유효하지 않은 토큰입니다.");
+            throw new TokenException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+        }
+    }
+
+    // 토큰에서 userId를 추출하는 메서드
+    public String getUserIdFromToken(String token) {
+        try {
+            return Jwts.parser()
+                    .verifyWith(this.getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("userId", String.class);
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("유효하지 않은 토큰입니다.");
             throw new TokenException(ErrorCode.INVALID_TOKEN_EXCEPTION);

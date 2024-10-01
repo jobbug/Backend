@@ -2,7 +2,6 @@ package com.example.jobbug.global.config;
 
 import com.example.jobbug.domain.auth.application.OAuthLoginFailureHandler;
 import com.example.jobbug.domain.auth.application.OAuthLoginSuccessHandler;
-import com.example.jobbug.domain.auth.service.CustomOAuth2UserService;
 import com.example.jobbug.global.jwt.JWTFilter;
 import com.example.jobbug.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
     private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
     /**
      * 권한별 URI
@@ -73,7 +71,7 @@ public class SecurityConfig {
                         .successHandler(oAuthLoginSuccessHandler) // OAuth2 로그인 성공 핸들러 설정
                         .failureHandler(oAuthLoginFailureHandler) // OAuth2 로그인 실패 핸들러 설정
                 )
-                .addFilterBefore(new JWTFilter(jwtUtil, customOAuth2UserService), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
 
         return http.build();
     }

@@ -51,7 +51,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             } else {
                 // 기존 유저
                 log.info("기존 유저입니다.");
-                String accessToken = jwtUtil.generateAccessToken(existingUser.getEmail());
+                String accessToken = jwtUtil.generateAccessToken(existingUser.getId().toString());
                 String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, accessToken);
                 getRedirectStrategy().sendRedirect(request, response, redirectUri);
             }

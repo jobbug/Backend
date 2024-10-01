@@ -47,7 +47,7 @@ public class UserService {
         userRepository.save(newUser);
 
         // 액세스 토큰 발급
-        String accessToken = jwtUtil.generateAccessToken(newUser.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(newUser.getId().toString());
 
         return UserConverter.toUserRegisterResponse(newUser, accessToken);
     }
