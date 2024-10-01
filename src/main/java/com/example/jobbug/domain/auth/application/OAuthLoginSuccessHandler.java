@@ -28,12 +28,6 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
     @Value("${jwt.redirect.register}")
     private String REGISTER_TOKEN_REDIRECT_URI; // 신규 유저 로그인 시 리다이렉트 URI
 
-    @Value("${jwt.access-token.expiration-time}")
-    private long ACCESS_TOKEN_EXPIRATION_TIME;
-
-    @Value("${jwt.register-token.expiration-time}")
-    private long REGISTER_TOKEN_EXPIRATION_TIME;
-
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
@@ -59,7 +53,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             } else {
                 // 기존 유저
                 log.info("기존 유저입니다.");
-                String accessToken = URLEncoder.encode(jwtUtil.generateAccessToken(existingUser.getEmail()));
+                String accessToken = URLEncoder.encode(jwtUtil.generateAccessToken(existingUser.getId().toString()));
                 String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, accessToken);
                 getRedirectStrategy().sendRedirect(request, response, redirectUri);
             }
