@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ApiResponse logout(
+    public ResponseEntity<?> logout(
             HttpServletResponse response) {
 
         userService.logout(response);
