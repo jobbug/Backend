@@ -14,6 +14,8 @@ public enum ErrorCode {
 
     // 400
     INVALID_TOKEN_EXCEPTION(HttpStatus.BAD_REQUEST, "E101", "유효하지 않은 토큰을 입력했습니다."),
+    INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "E001", "적절하지 않은 요청 값입니다."),
+    AI_IMAGE_CREATE_EXCEPTION(HttpStatus.BAD_REQUEST, "E302", "AI 이미지 생성에 실패했습니다."),
 
     // 401
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "E401", "인증 정보가 유효하지 않습니다."),
