@@ -1,7 +1,6 @@
 package com.example.jobbug.global.jwt;
 
-import com.example.jobbug.domain.auth.dto.CustomOAuth2User;
-import com.example.jobbug.domain.auth.service.CustomOAuth2UserService;
+import com.example.jobbug.domain.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -19,25 +18,22 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
 
         if (token != null && jwtUtil.isAccessTokenValid(token)) {
-            String email = jwtUtil.getEmailFromToken(token); // 이메일 추출
-            CustomOAuth2User customOAuth2User = customOAuth2UserService.loadUserByUsername(email); // 이메일로 사용자 정보 로드
+            String userId = jwtUtil.getUserIdFromToken(token).toString();
 
-            if (customOAuth2User != null) {
-                // 사용자 정보로 인증 객체 생성 및 SecurityContext에 설정
-                Authentication authToken = new UsernamePasswordAuthenticationToken(
-                        customOAuth2User,
-                        null,
-                        customOAuth2User.getAuthorities()
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+            // 인증 객체 생성 및 SecurityContext에 설정
+            Authentication authToken = new UsernamePasswordAuthenticationToken(
+                    userId, // principal로 이메일 사용
+                    null,  // credentials는 필요 없으므로 null
+                    null   // authorities는 비워둠 (필요한 경우 권한 추가)
+            );
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
         filterChain.doFilter(request, response);
     }
@@ -54,16 +50,6 @@ public class JWTFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
-        }
-
-        // 쿠키에서 토큰 추출
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("Authorization".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
         }
 
         return null;

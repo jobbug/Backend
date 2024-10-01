@@ -10,6 +10,7 @@ import com.example.jobbug.global.exception.model.TokenException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,13 @@ public class UserController {
         userService.logout(response);
 
         return SuccessNonDataResponse.success(LOGOUT_SUCCESS);
+    }
+
+    @GetMapping("/test")
+    public String test(
+            @AuthenticationPrincipal String userId
+    ) {
+        return "test " + userId;
     }
 }
 

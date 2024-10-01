@@ -2,7 +2,6 @@ package com.example.jobbug.global.config;
 
 import com.example.jobbug.domain.auth.application.OAuthLoginFailureHandler;
 import com.example.jobbug.domain.auth.application.OAuthLoginSuccessHandler;
-import com.example.jobbug.domain.auth.service.CustomOAuth2UserService;
 import com.example.jobbug.global.jwt.JWTFilter;
 import com.example.jobbug.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,6 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
     private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
     /**
      * 권한별 URI
@@ -47,7 +45,7 @@ public class SecurityConfig {
     private final RequestMatcher[] permitAllUrlRequestMatchers = {
             new AntPathRequestMatcher("/", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/user/register"),
-            new AntPathRequestMatcher("/auth/google/**")
+            new AntPathRequestMatcher("/oauth2/authorization/google")
     };
 
 //    // 인증되지 않은 사용자만 접근 가능한 URI
@@ -63,6 +61,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 비활성화
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
+                .requestCache(AbstractHttpConfigurer::disable) // 요청 캐시 비활성화
                 .authorizeHttpRequests(auth -> auth // 접근 uri 권한 관리.requestMatchers("/auth/google/**").permitAll()
                                 .requestMatchers(adminRequestMatchers).hasAnyRole("ADMIN")
                                 .requestMatchers(permitAllUrlRequestMatchers).permitAll()
@@ -73,7 +72,7 @@ public class SecurityConfig {
                         .successHandler(oAuthLoginSuccessHandler) // OAuth2 로그인 성공 핸들러 설정
                         .failureHandler(oAuthLoginFailureHandler) // OAuth2 로그인 실패 핸들러 설정
                 )
-                .addFilterBefore(new JWTFilter(jwtUtil, customOAuth2UserService), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
 
         return http.build();
     }
@@ -81,7 +80,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 프론트엔드 URL
+        configuration.setAllowedOrigins(Arrays.asList("https://jobbugfrontend.vercel.app")); // 프론트엔드 URL
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);

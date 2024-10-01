@@ -4,6 +4,7 @@ import com.example.jobbug.domain.auth.dto.GoogleUserInfo;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 @Slf4j
 @Component
@@ -25,6 +27,12 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
     @Value("${jwt.redirect.register}")
     private String REGISTER_TOKEN_REDIRECT_URI; // 신규 유저 로그인 시 리다이렉트 URI
+
+    @Value("${jwt.access-token.expiration-time}")
+    private long ACCESS_TOKEN_EXPIRATION_TIME;
+
+    @Value("${jwt.register-token.expiration-time}")
+    private long REGISTER_TOKEN_EXPIRATION_TIME;
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
@@ -45,13 +53,13 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
             if (existingUser == null) {
                 // 신규 유저
                 log.info("신규 유저입니다.");
-                String registerToken = jwtUtil.generateRegisterToken(providerId, email);
+                String registerToken = URLEncoder.encode(jwtUtil.generateRegisterToken(providerId, email));
                 String redirectUri = String.format(REGISTER_TOKEN_REDIRECT_URI, registerToken);
                 getRedirectStrategy().sendRedirect(request, response, redirectUri);
             } else {
                 // 기존 유저
                 log.info("기존 유저입니다.");
-                String accessToken = jwtUtil.generateAccessToken(existingUser.getEmail());
+                String accessToken = URLEncoder.encode(jwtUtil.generateAccessToken(existingUser.getEmail()));
                 String redirectUri = String.format(ACCESS_TOKEN_REDIRECT_URI, accessToken);
                 getRedirectStrategy().sendRedirect(request, response, redirectUri);
             }
