@@ -2,6 +2,7 @@ package com.example.jobbug.domain.user.controller;
 
 import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
 import com.example.jobbug.domain.user.service.UserService;
+import com.example.jobbug.global.config.web.UserId;
 import com.example.jobbug.global.dto.ApiResponse;
 import com.example.jobbug.global.dto.ErrorResponse;
 import com.example.jobbug.global.dto.SuccessNonDataResponse;
@@ -46,9 +47,9 @@ public class UserController {
 
     @GetMapping("/test")
     public String test(
-            @AuthenticationPrincipal String userId
+            @UserId Long userId
     ) {
-        return "test " + Long.parseLong(userId);
+        return "test " + userId;
     }
 }
 
