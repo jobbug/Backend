@@ -46,4 +46,27 @@ public class PostService {
                 .build();
 
     }
+
+    public ImageUploadResponse uploadEditedImage(MultipartFile originImage, MultipartFile editedImage) {
+        String originImageUrl;
+        try {
+            originImageUrl = s3Service.upload(originImage, "origin");
+        } catch (IllegalArgumentException | IOException e) {
+            log.error("S3 업로드 중 오류 발생: {}", e.getMessage());
+            throw new S3Exception(S3_UPLOAD_FAILED);
+        }
+
+        String editedImageUrl;
+        try {
+            editedImageUrl = s3Service.upload(editedImage, "edited");
+        } catch (IllegalArgumentException | IOException e) {
+            log.error("S3 업로드 중 오류 발생: {}", e.getMessage());
+            throw new S3Exception(S3_UPLOAD_FAILED);
+        }
+
+        return ImageUploadResponse.builder()
+                .originImageURL(originImageUrl)
+                .editedImageURL(editedImageUrl)
+                .build();
+    }
 }

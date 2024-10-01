@@ -31,4 +31,16 @@ public class PostController {
         }
     }
 
+    @PostMapping("upload/edited")
+    public ResponseEntity<?> uploadEditedImage(
+            @RequestPart(value = "originImage") MultipartFile originImage,
+            @RequestPart(value = "editedImage") MultipartFile editedImage
+    ) {
+        try {
+            return ResponseEntity.ok(postService.uploadEditedImage(originImage, editedImage));
+        } catch (S3Exception e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
 }
