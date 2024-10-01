@@ -1,26 +1,51 @@
 package com.example.jobbug.domain.post.service;
 
+import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.post.dto.response.ImageUploadResponse;
+import com.example.jobbug.domain.post.dto.response.SavePostResponse;
+import com.example.jobbug.domain.post.entity.Post;
+import com.example.jobbug.domain.post.repository.PostRepository;
+import com.example.jobbug.domain.user.entity.User;
+import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.model.AIException;
+import com.example.jobbug.global.exception.model.BadRequestException;
+import com.example.jobbug.global.exception.model.NotFoundException;
 import com.example.jobbug.global.exception.model.S3Exception;
 import com.example.jobbug.global.s3.S3Service;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.example.jobbug.global.exception.enums.ErrorCode.AI_IMAGE_CREATE_EXCEPTION;
-import static com.example.jobbug.global.exception.enums.ErrorCode.S3_UPLOAD_FAILED;
+import static com.example.jobbug.global.exception.enums.ErrorCode.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
+    @Value("${kakao.rest-api-key}")
+    private String kakaoApiKey;
+
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
     private final AIService aiService;
     private final S3Service s3Service;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public ImageUploadResponse uploadAIImage(MultipartFile image, int emoticonNum) {
 
@@ -68,5 +93,57 @@ public class PostService {
                 .originImageURL(originImageUrl)
                 .editedImageURL(editedImageUrl)
                 .build();
+    }
+
+    @Transactional
+    public SavePostResponse savePost(Long userId, SavePostRequest request) {
+        User author = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        Map<String, Double> coordinates = fetchCoordinates(request.getAddress());
+        Post post = Post.of(author, request, coordinates.get("latitude"), coordinates.get("longitude"));
+        postRepository.save(post);
+        return SavePostResponse.builder().postId(post.getId()).build();
+    }
+
+    private Map<String, Double> fetchCoordinates(String address) {
+        URI uri = buildKakaoApiUri(address);
+        HttpEntity<String> requestEntity = buildKakaoApiRequestEntity();
+
+        ResponseEntity<Map> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, Map.class);
+        return extractCoordinatesFromResponse(response);
+    }
+
+    private URI buildKakaoApiUri(String address) {
+        try {
+            return new URI("https://dapi.kakao.com/v2/local/search/address.json?query=" + URLEncoder.encode(address, "UTF-8"));
+        } catch (URISyntaxException | UnsupportedEncodingException e) {
+            log.error("잘못된 주소 형식입니다: {}", e.getMessage());
+            throw new BadRequestException(NOT_FOUND_ADDRESS_EXCEPTION);
+        }
+    }
+
+    private HttpEntity<String> buildKakaoApiRequestEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", "KakaoAK " + kakaoApiKey);
+        return new HttpEntity<>(headers);
+    }
+
+    private Map<String, Double> extractCoordinatesFromResponse(ResponseEntity<Map> response) {
+        Map<String, Object> meta = (Map<String, Object>) response.getBody().get("meta");
+        if (meta == null || (int) meta.get("total_count") == 0) {
+            throw new BadRequestException(NOT_FOUND_ADDRESS_EXCEPTION);
+        }
+
+        Map<String, Object> document = ((List<Map<String, Object>>) response.getBody().get("documents")).get(0);
+        double latitude = Double.parseDouble((String) document.get("y"));
+        double longitude = Double.parseDouble((String) document.get("x"));
+
+        Map<String, Double> coordinates = new HashMap<>();
+        coordinates.put("latitude", latitude);
+        coordinates.put("longitude", longitude);
+
+        return coordinates;
     }
 }
