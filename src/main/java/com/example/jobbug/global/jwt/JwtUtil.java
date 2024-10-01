@@ -25,6 +25,9 @@ public class JwtUtil {
     @Value("${jwt.access-token.expiration-time}")
     private long ACCESS_TOKEN_EXPIRATION_TIME;
 
+    @Value("${jwt.register-token.expiration-time}")
+    private long REGISTER_TOKEN_EXPIRATION_TIME;
+
     private SecretKey getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(this.SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -48,7 +51,7 @@ public class JwtUtil {
                 .claim("providerId", providerId)
                 .claim("email", email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + REGISTER_TOKEN_EXPIRATION_TIME))
                 .signWith(this.getSigningKey())
                 .compact();
     }
