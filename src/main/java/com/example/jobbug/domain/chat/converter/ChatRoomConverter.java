@@ -10,6 +10,7 @@ import java.util.Comparator;
 public class ChatRoomConverter {
 
     public static ChatRoomResponse mapToResponse(ChatRoom chatRoom) {
+
         Message lastMessage = chatRoom.getMessages()
                 .stream()
                 .max(Comparator.comparing(BaseEntity::getCreatedAt))

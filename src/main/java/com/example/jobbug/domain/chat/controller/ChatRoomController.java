@@ -2,7 +2,7 @@ package com.example.jobbug.domain.chat.controller;
 
 import com.example.jobbug.domain.chat.dto.request.CreateRoomRequest;
 import com.example.jobbug.domain.chat.service.ChatRoomService;
-import com.example.jobbug.global.dto.ApiResponse;
+import com.example.jobbug.global.dto.ListWrapperResponse;
 import com.example.jobbug.global.dto.SuccessResponse;
 import com.example.jobbug.global.exception.enums.SuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,23 @@ public class ChatRoomController {
 
     @PostMapping
     public ResponseEntity<?> createRoom(@RequestBody CreateRoomRequest request) {
-        // TODO-HONG: 수락자 기본 아이디 1
+
+        Long userId = 1L;
         return SuccessResponse.success(
                 SuccessCode.CREATE_SUCCESS,
-                chatRoomService.createRoom(request, 1L),
+                chatRoomService.createRoom(request, userId),
                 "채팅방 생성 성공"
         );
     }
 
+    @GetMapping
+    public ResponseEntity<?> loadAll() {
+        Long userId = 1L; // TODO-HONG: 수락자 기본 아이디 1
+        return SuccessResponse.success(
+                SuccessCode.GET_SUCCESS,
+                new ListWrapperResponse(chatRoomService.findAllByUserId(userId)),
+                "모든 채팅방 조회 성공"
+        );
+        
+    }
 }

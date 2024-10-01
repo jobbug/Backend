@@ -1,0 +1,25 @@
+package com.example.jobbug.domain.chat.repository;
+
+
+import com.example.jobbug.domain.chat.dto.response.ChatRoomResponse;
+import com.example.jobbug.domain.chat.entity.ChatRoom;
+import com.example.jobbug.domain.chat.entity.QChatRoom;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+@RequiredArgsConstructor
+public class ChatRoomQueryRepository {
+    private final JPAQueryFactory queryFactory;
+
+    public List<ChatRoom> findAllByUserIdInAuthorIdOrParticipantId(Long userId) {
+        var chatRoom = QChatRoom.chatRoom;
+        return queryFactory
+                .selectFrom(chatRoom)
+                .where(chatRoom.author.id.eq(userId).or(chatRoom.participant.id.eq(userId)))
+                .fetch();
+    }
+}

@@ -8,8 +8,8 @@ import com.example.jobbug.domain.chat.repository.ChatRoomQueryRepository;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
-import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.NotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +18,17 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatRoomService {
-//    private final ChatRoomQueryRepository chatRoomQueryRepository;
+    private final ChatRoomQueryRepository chatRoomQueryRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
 
-//    public List<ChatRoomResponse> findAllByUserIdInAuthorIdOrParticipantId(Long userId) {
-//        return chatRoomQueryRepository.findAllByUserIdInAuthorIdOrParticipantId(userId)
-//                .stream()
-//                .map(ChatRoomConverter::mapToResponse)
-//                .toList();
-//    }
+    @Transactional
+    public List<ChatRoomResponse> findAllByUserId(Long userId) {
+        return chatRoomQueryRepository.findAllByUserIdInAuthorIdOrParticipantId(userId)
+                .stream()
+                .map(ChatRoomConverter::mapToResponse)
+                .toList();
+    }
 
     // 수락자가 채팅방 생성 요청
     public ChatRoomResponse createRoom(CreateRoomRequest request, Long userId) {
