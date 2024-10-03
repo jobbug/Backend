@@ -22,4 +22,17 @@ public class ChatRoomQueryRepository {
                 .where(chatRoom.author.id.eq(userId).or(chatRoom.participant.id.eq(userId)))
                 .fetch();
     }
+
+    public boolean existsByUserIdInAuthorIdOrParticipantIdAndPostId(Long userId, Long postId) {
+        var chatRoom = QChatRoom.chatRoom;
+        return queryFactory
+                .select(chatRoom)
+                .from(chatRoom)
+                .where(
+                        chatRoom.author.id.eq(userId)
+                                .or(chatRoom.participant.id.eq(userId)),
+                        chatRoom.postId.eq(postId)
+                )
+                .fetch().stream().findAny().isPresent();
+    }
 }
