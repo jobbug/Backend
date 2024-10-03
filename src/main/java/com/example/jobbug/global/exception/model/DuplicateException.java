@@ -4,11 +4,11 @@ import com.example.jobbug.global.exception.enums.ErrorCode;
 
 public class DuplicateException extends JobbugException {
 
-    public DuplicateException() {
-        super(ErrorCode.DUPLICATE_EXCEPTION);
+    public DuplicateException(ErrorCode errorCode) {
+        super(errorCode);
     }
 
-    public DuplicateException(String message) {
-        super(ErrorCode.DUPLICATE_EXCEPTION, message);
+    public DuplicateException(ErrorCode errorCode, String message) {
+        super(errorCode, message);
     }
 }
