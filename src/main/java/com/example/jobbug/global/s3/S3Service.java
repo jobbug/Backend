@@ -46,10 +46,18 @@ public class S3Service {
         }
     }
 
+    // S3에 파일 업로드
+    public String upload(File file, String dirName) {
+        String fileName = dirName + "/" + file.getName();
+        amazonS3.putObject(new PutObjectRequest(bucket, fileName, file));
+        String fileUrl = amazonS3.getUrl(bucket, fileName).toString();
+        log.info("File uploaded to S3: {}", fileUrl);
+        return fileUrl;
+    }
+
     // S3에서 파일 삭제
     public void deleteFile(String fileName) {
         try {
-            // URL 디코딩을 통해 원래의 파일 이름을 가져옵니다.
             String decodedFileName = URLDecoder.decode(fileName, "UTF-8");
             log.info("Deleting file from S3: " + decodedFileName);
             amazonS3.deleteObject(bucket, decodedFileName);

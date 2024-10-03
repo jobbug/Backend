@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.post.entity;
 
+import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
@@ -83,6 +84,25 @@ public class Post extends BaseEntity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.reward = reward;
+    }
+
+    public static Post of(User author, SavePostRequest request, double latitude, double longitude) {
+        return Post.builder()
+                .author(author)
+                .title(request.getTitle())
+                .content(request.getContent())
+                .bugType(request.getBug_type())
+                .addr(request.getAddress())
+                .detailAddr(request.getAddress_datail())
+                .startTime(request.getStart_time())
+                .endTime(request.getEnd_time())
+                .reward(request.getReward())
+                .originImage(request.getOriginImageUrl())
+                .editedImage(request.getEditedImageUrl())
+                .status("진행중")
+                .latitude(latitude)
+                .longitude(longitude)
+                .build();
     }
 }
 
