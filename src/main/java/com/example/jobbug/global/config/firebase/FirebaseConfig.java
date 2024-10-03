@@ -1,4 +1,4 @@
-package com.example.jobbug.global.config;
+package com.example.jobbug.global.config.firebase;
 
 import com.example.jobbug.global.property.FirebaseProperty;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -16,6 +16,7 @@ import java.io.IOException;
 public class FirebaseConfig {
 
     private final FirebaseProperty firebaseProperty;
+    private final FirebaseMessageListener firebaseMessageListener;
 
     // 스프링 빈 초기화 이후 수행
     @PostConstruct
@@ -28,6 +29,8 @@ public class FirebaseConfig {
                     .build();
 
             FirebaseApp.initializeApp(options);
+
+            firebaseMessageListener.init();
         } catch (IOException e) {
             e.printStackTrace();
         }
