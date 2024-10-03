@@ -18,6 +18,9 @@ public class Message extends BaseEntity {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "number", nullable = false)
+    private Long number;
+
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.STRING)
     private MessageType type;
@@ -36,7 +39,8 @@ public class Message extends BaseEntity {
     private boolean isRead;
 
     @Builder
-    public Message(ChatRoom chatRoom, String content, Long senderId, boolean isRead, MessageType type) {
+    public Message(Long number, ChatRoom chatRoom, String content, Long senderId, boolean isRead, MessageType type) {
+        this.number = number;
         this.chatRoom = chatRoom;
         this.content = content;
         this.senderId = senderId;

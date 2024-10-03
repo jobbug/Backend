@@ -8,7 +8,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class FirebaseMessage {
-    private Long id;
+    private Long number;
     private MessageType type;
     private Long senderId;
     private String senderName;

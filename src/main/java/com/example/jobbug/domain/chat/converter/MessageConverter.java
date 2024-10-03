@@ -6,6 +6,7 @@ import com.example.jobbug.domain.chat.entity.firebase.FirebaseMessage;
 import com.example.jobbug.domain.chat.entity.firebase.MessageType;
 import com.example.jobbug.domain.user.entity.User;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 public class MessageConverter {
@@ -24,12 +25,12 @@ public class MessageConverter {
 
     public static FirebaseMessage mapToFirebase(User user, Message message, MessageType type) {
         return new FirebaseMessage(
-                message.getId(),
+                message.getNumber(),
                 type,
                 user.getId(),
                 user.getName(),
                 message.getContent(),
-                message.getCreatedAt().toInstant(ZoneOffset.UTC).toEpochMilli()
+                LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli() // TODO-HONG : 추후 시간 일치 필요
         );
     }
 }

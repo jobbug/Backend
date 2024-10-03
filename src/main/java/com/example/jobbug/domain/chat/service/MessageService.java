@@ -50,14 +50,16 @@ public class MessageService {
             throw new ForbiddenException();
         }
 
-        // TODO-HONG : DB 접근 전 아이디 생성하여 비동기 처리
-        Message message = messageRepository.save(Message.builder()
+        long number = messageIdGenerator.nextId();
+        
+        Message message = Message.builder()
+                .number(number)
                 .chatRoom(chatRoom)
                 .content(request.getContent())
                 .senderId(userId)
                 .isRead(false)
                 .type(MessageType.MESSAGE)
-                .build());
+                .build();
 
         DatabaseReference roomMessageRef = FirebaseDatabase.getInstance()
                 .getReference("messages");
@@ -65,6 +67,8 @@ public class MessageService {
         ApiFuture<Void> future = roomMessageRef.push().setValueAsync(
                 MessageConverter.mapToFirebase(user, message, MessageType.MESSAGE)
         );
+
+        messageRepository.save(message);
 
         try {
             future.get();
