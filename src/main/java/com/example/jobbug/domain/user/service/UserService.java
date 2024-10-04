@@ -2,9 +2,12 @@ package com.example.jobbug.domain.user.service;
 
 import com.example.jobbug.domain.user.converter.UserConverter;
 import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
+import com.example.jobbug.domain.user.dto.response.UserInfoResponse;
 import com.example.jobbug.domain.user.dto.response.UserRegisterResponse;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
+import com.example.jobbug.global.exception.enums.ErrorCode;
+import com.example.jobbug.global.exception.model.NotFoundException;
 import com.example.jobbug.global.exception.model.S3Exception;
 import com.example.jobbug.global.exception.model.TokenException;
 import com.example.jobbug.global.jwt.JwtUtil;
@@ -62,6 +65,15 @@ public class UserService {
         cookie.setSecure(true);  // HTTPS 사용 시 true로 설정
         response.addCookie(cookie);
     }
+
+    // 유저 정보 조회
+    public UserInfoResponse getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        return UserConverter.toUserInfoResponse(user);
+    }
+
 
     // 토큰 유효성 검사
     private void validateToken(String registerToken) {
