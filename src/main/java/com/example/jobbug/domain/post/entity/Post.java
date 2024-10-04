@@ -35,6 +35,9 @@ public class Post extends BaseEntity {
     @Column(name = "bug_type", nullable = false)
     private String bugType;
 
+    @Column(name = "bug_name")
+    private String bugName;
+
     @Column(name = "origin_image")
     private String originImage;
 
@@ -69,11 +72,12 @@ public class Post extends BaseEntity {
     private List<Reservation> reservations = new ArrayList<>();
 
     @Builder
-    public Post(User author, String title, String content, String bugType, String originImage, String editedImage, String status, String addr, String detailAddr, double latitude, double longitude, String startTime, String endTime, String reward) {
+    public Post(User author, String title, String content, String bugType, String bugName, String originImage, String editedImage, String status, String addr, String detailAddr, double latitude, double longitude, String startTime, String endTime, String reward) {
         this.author = author;
         this.title = title;
         this.content = content;
         this.bugType = bugType;
+        this.bugName = bugName;
         this.originImage = originImage;
         this.editedImage = editedImage;
         this.status = status;
@@ -92,6 +96,7 @@ public class Post extends BaseEntity {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .bugType(request.getBug_type())
+                .bugName(request.getBug_name())
                 .addr(request.getAddress())
                 .detailAddr(request.getAddress_datail())
                 .startTime(request.getStart_time())
