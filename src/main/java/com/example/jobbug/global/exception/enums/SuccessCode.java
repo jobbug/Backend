@@ -22,6 +22,7 @@ public enum SuccessCode {
     CREATE_POST_SUCCESS(HttpStatus.CREATED, "게시글 작성 성공입니다."),
     UPLOAD_AI_IMAGE_SUCCESS(HttpStatus.CREATED, "AI 이미지 업로드 성공입니다."),
     UPLOAD_EDITED_IMAGE_SUCCESS(HttpStatus.CREATED, "편집 이미지 업로드 성공입니다."),
+    SAVE_REVIEW_SUCCESS(HttpStatus.CREATED, "후기 작성 성공입니다."),
     ;
 
 
