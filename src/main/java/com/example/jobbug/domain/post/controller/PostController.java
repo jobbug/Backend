@@ -85,4 +85,15 @@ public class PostController {
         }
     }
 
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<?> getPostDetail(
+            @PathVariable Long postId
+    ) {
+        try {
+            return SuccessResponse.success(SuccessCode.GET_POST_DETAIL_SUCCESS, postService.getPostDetail(postId));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
 }

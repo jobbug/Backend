@@ -2,6 +2,7 @@ package com.example.jobbug.domain.post.converter;
 
 import com.example.jobbug.domain.post.dto.response.ImageUploadResponse;
 import com.example.jobbug.domain.post.dto.response.MainPostInfoResponse;
+import com.example.jobbug.domain.post.dto.response.PostDetailInfoResponse;
 import com.example.jobbug.domain.post.entity.Post;
 import org.springframework.data.domain.Pageable;
 
@@ -38,6 +39,25 @@ public class PostConverter {
                 .startTime(post.getStartTime())
                 .endTime(post.getEndTime())
                 .createdAt(post.getCreatedAt())
+                .build();
+    }
+
+    public static PostDetailInfoResponse toPostDetailInfoResponse(Post post) {
+        return PostDetailInfoResponse.builder()
+                .postId(post.getId())
+                .nickname(post.getAuthor().getName())
+                .profileImageUrl(post.getAuthor().getProfile())
+                .title(post.getTitle())
+                .bug_type(post.getBugType())
+                .bug_name(post.getBugName())
+                .reward(post.getReward())
+                .addr(post.getAddr())
+                .content(post.getContent())
+                .startTime(post.getStartTime())
+                .endTime(post.getEndTime())
+                .originImageUrl(post.getOriginImage())
+                .editImageUrl(post.getEditedImage())
+                .createdAt(String.valueOf(post.getCreatedAt()))
                 .build();
     }
 }

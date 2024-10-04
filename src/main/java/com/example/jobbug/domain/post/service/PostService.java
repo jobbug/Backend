@@ -4,6 +4,7 @@ import com.example.jobbug.domain.post.converter.PostConverter;
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.post.dto.response.ImageUploadResponse;
 import com.example.jobbug.domain.post.dto.response.MainPostInfoResponse;
+import com.example.jobbug.domain.post.dto.response.PostDetailInfoResponse;
 import com.example.jobbug.domain.post.dto.response.SavePostResponse;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.post.repository.PostRepository;
@@ -112,6 +113,7 @@ public class PostService {
         return SavePostResponse.builder().postId(post.getId()).build();
     }
 
+    @Transactional
     public MainPostInfoResponse getPosts(Long userId, String addr, int pageNum, String type) {
         Map<String, Double> userCoordinates = getUserCoordinates(userId, addr);
         double userLat = userCoordinates.get("latitude");
@@ -132,6 +134,14 @@ public class PostService {
                 .collect(Collectors.toList());
 
         return PostConverter.toMainPostInfoResponse(filteredPosts, pageable, filteredPosts.size());
+    }
+
+    @Transactional
+    public PostDetailInfoResponse getPostDetail(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_POST_EXCEPTION)
+        );
+        return PostConverter.toPostDetailInfoResponse(post);
     }
 
     // Haversine 공식 기반 거리 계산 (단위: km)

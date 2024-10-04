@@ -47,6 +47,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/user/register"),
             new AntPathRequestMatcher("/oauth2/authorization/google"),
             new AntPathRequestMatcher("/api/post/public/**"),
+            new AntPathRequestMatcher("/api/post/**", HttpMethod.GET.name()),
     };
 
 //    // 인증되지 않은 사용자만 접근 가능한 URI
