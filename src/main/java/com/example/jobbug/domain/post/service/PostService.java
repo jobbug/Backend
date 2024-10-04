@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -114,12 +115,19 @@ public class PostService {
     }
 
     @Transactional
-    public MainPostInfoResponse getPosts(Long userId, String addr, int pageNum, String type) {
+    public MainPostInfoResponse getPosts(Long userId, String addr, int pageNum, String type, String sort) {
         Map<String, Double> userCoordinates = getUserCoordinates(userId, addr);
         double userLat = userCoordinates.get("latitude");
         double userLon = userCoordinates.get("longitude");
 
-        Pageable pageable = PageRequest.of(pageNum, 5);
+        Sort sortBy = Sort.by("createdAt");
+        if ("최신순".equalsIgnoreCase(sort)) {
+            sortBy = sortBy.descending();
+        } else if ("오래된순".equalsIgnoreCase(sort)) {
+            sortBy = sortBy.ascending();
+        }
+
+        Pageable pageable = PageRequest.of(pageNum, 5, sortBy);
         Page<Post> page = postRepository.findAllByStatus("진행중", pageable);
 
         List<Post> filteredPosts = page.getContent().stream()

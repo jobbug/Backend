@@ -63,10 +63,11 @@ public class PostController {
             @UserId Long userId,
             @RequestParam(required = false, defaultValue = "") String addr,
             @RequestParam(required = false, defaultValue = "0") int pageNum,
-            @RequestParam(required = false, defaultValue = "전체") String type
+            @RequestParam(required = false, defaultValue = "전체") String type,
+            @RequestParam(required = false, defaultValue = "최신순") String sort
     ) {
         try {
-            return SuccessResponse.success(SuccessCode.GET_MAIN_POST_SUCCESS, postService.getPosts(userId, addr, pageNum, type));
+            return SuccessResponse.success(SuccessCode.GET_MAIN_POST_SUCCESS, postService.getPosts(userId, addr, pageNum, type, sort));
         } catch (BadRequestException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
@@ -76,10 +77,11 @@ public class PostController {
     public ResponseEntity<?> getPosts(
             @RequestParam(required = false, defaultValue = "") String addr,
             @RequestParam(required = false, defaultValue = "0") int pageNum,
-            @RequestParam(required = false, defaultValue = "전체") String type
+            @RequestParam(required = false, defaultValue = "전체") String type,
+            @RequestParam(required = false, defaultValue = "최신순") String sort
     ) {
         try {
-            return SuccessResponse.success(SuccessCode.GET_MAIN_POST_SUCCESS, postService.getPosts(null, addr, pageNum, type));
+            return SuccessResponse.success(SuccessCode.GET_MAIN_POST_SUCCESS, postService.getPosts(null, addr, pageNum, type, sort));
         } catch (BadRequestException | NotFoundException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
