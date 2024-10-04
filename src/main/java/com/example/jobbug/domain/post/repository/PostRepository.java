@@ -18,4 +18,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByLatitudeBetweenAndLongitudeBetween(
             double latMin, double latMax, double lonMin, double lonMax, Pageable pageable
     );
+    Page<Post> findAllByStatus(String status, Pageable pageable);
 }

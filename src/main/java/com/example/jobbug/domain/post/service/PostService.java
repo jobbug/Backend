@@ -118,8 +118,8 @@ public class PostService {
         double userLon = userCoordinates.get("longitude");
 
         Pageable pageable = PageRequest.of(pageNum, 5);
+        Page<Post> page = postRepository.findAllByStatus("진행중", pageable);
 
-        Page<Post> page = postRepository.findAll(pageable);
         List<Post> filteredPosts = page.getContent().stream()
                 .filter(post -> calculateDistance(userLat, userLon, post.getLatitude(), post.getLongitude()) <= 3)  // 3km 이내만 필터링
                 .filter(post -> {
