@@ -1,4 +1,4 @@
-package com.example.jobbug.domain.post.emoticon;
+package com.example.jobbug.domain.post.enums;
 
 import static com.example.jobbug.global.exception.enums.ErrorCode.INVALID_INPUT_VALUE;
 
