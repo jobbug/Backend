@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 public class UserInfoResponse {
     private Long userId;
+    private String name;
     private String nickname;
     private String email;
     private String profileImageUrl;

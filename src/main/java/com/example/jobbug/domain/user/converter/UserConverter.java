@@ -19,6 +19,7 @@ public class UserConverter {
     public static UserInfoResponse toUserInfoResponse(User user) {
         return UserInfoResponse.builder()
                 .userId(user.getId())
+                .name(user.getName())
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .profileImageUrl(user.getProfile())
