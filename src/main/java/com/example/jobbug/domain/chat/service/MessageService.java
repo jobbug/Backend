@@ -65,7 +65,7 @@ public class MessageService {
                 .getReference("messages");
 
         ApiFuture<Void> future = roomMessageRef.push().setValueAsync(
-                MessageConverter.mapToFirebase(user, message, MessageType.MESSAGE)
+                MessageConverter.mapToFirebase(user, message, chatRoom.getId(), MessageType.MESSAGE)
         );
 
         messageRepository.save(message);

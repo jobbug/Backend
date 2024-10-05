@@ -23,11 +23,12 @@ public class MessageConverter {
         );
     }
 
-    public static FirebaseMessage mapToFirebase(User user, Message message, MessageType type) {
+    public static FirebaseMessage mapToFirebase(User user, Message message, Long roomId, MessageType type) {
         return new FirebaseMessage(
                 message.getNumber(),
                 type,
                 user.getId(),
+                roomId,
                 user.getName(),
                 message.getContent(),
                 LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli() // TODO-HONG : 추후 시간 일치 필요
