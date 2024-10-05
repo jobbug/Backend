@@ -7,6 +7,7 @@ import com.example.jobbug.global.dto.ApiResponse;
 import com.example.jobbug.global.dto.ErrorResponse;
 import com.example.jobbug.global.dto.SuccessNonDataResponse;
 import com.example.jobbug.global.dto.SuccessResponse;
+import com.example.jobbug.global.exception.model.NotFoundException;
 import com.example.jobbug.global.exception.model.TokenException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.example.jobbug.global.exception.enums.SuccessCode.LOGOUT_SUCCESS;
-import static com.example.jobbug.global.exception.enums.SuccessCode.REGISTER_SUCCESS;
+import static com.example.jobbug.global.exception.enums.SuccessCode.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -43,6 +43,17 @@ public class UserController {
         userService.logout(response);
 
         return SuccessNonDataResponse.success(LOGOUT_SUCCESS);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getUserInfo(
+            @UserId Long userId
+    ) {
+        try {
+            return SuccessResponse.success(GET_USER_INFO_SUCCESS, userService.getUserInfo(userId));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
     }
 
     @GetMapping("/test")

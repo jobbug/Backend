@@ -1,6 +1,6 @@
 package com.example.jobbug.domain.post.service;
 
-import com.example.jobbug.domain.post.emoticon.EmoticonEnum;
+import com.example.jobbug.domain.post.enums.EmoticonEnum;
 import com.example.jobbug.global.s3.S3Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

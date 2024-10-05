@@ -48,6 +48,8 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/user/register"),
             new AntPathRequestMatcher("/oauth2/authorization/google"),
+            new AntPathRequestMatcher("/api/post/public/**"),
+            new AntPathRequestMatcher("/api/post/**", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/ws/**")
     };
 
