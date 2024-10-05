@@ -11,6 +11,7 @@ import com.example.jobbug.domain.chat.repository.MessageRepository;
 import com.example.jobbug.domain.chat.util.MessageIdGenerator;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
+import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.ForbiddenException;
 import com.example.jobbug.global.exception.model.NotFoundException;
 import com.google.api.core.ApiFuture;
@@ -35,19 +36,19 @@ public class MessageService {
 
         // 채팅방 정보 조회
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId()).orElseThrow(
-                () -> new NotFoundException(String.format("채팅방 정보를 찾을 수 없습니다. (ID: %d)", request.getRoomId()))
+                () -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION)
         );
 
         // 사용자 정보 조회
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(String.format("사용자 정보를 찾을 수 없습니다. (ID: %d)", userId))
+                () -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION)
         );
 
         // 채팅방 참여자인지 확인
         boolean isAuthor = chatRoom.getAuthor().getId().equals(userId);
         boolean isParticipant = chatRoom.getParticipant().getId().equals(userId);
         if (!isAuthor && !isParticipant) {
-            throw new ForbiddenException();
+            throw new ForbiddenException(ErrorCode.NOT_PARTICIPANT_EXCEPTION);
         }
 
         long number = messageIdGenerator.nextId();
@@ -73,7 +74,7 @@ public class MessageService {
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e) {
-            throw new FirebaseException("채팅 전송 실패");
+            throw new FirebaseException(ErrorCode.FAILED_TO_SEND_MESSAGE);
         }
     }
 }

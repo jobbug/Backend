@@ -5,6 +5,7 @@ import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.firebase.FirebaseMessage;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.global.config.web.MessageWebSocketHandler;
+import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.NotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +33,7 @@ public class FirebaseMessageListener {
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
                 FirebaseMessage message = dataSnapshot.getValue(FirebaseMessage.class);
                 ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId()).orElseThrow(
-                        () -> new NotFoundException(String.format("채팅방 정보를 찾을 수 없습니다. (ID: %d)", message.getRoomId()))
+                        () -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION)
                 );
 
                 messageWebSocketHandler.sendMessage(chatRoom.getAuthor().getId(), message);

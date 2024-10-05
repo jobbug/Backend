@@ -1,6 +1,7 @@
 package com.example.jobbug.global.config.web;
 
 import com.example.jobbug.domain.chat.entity.firebase.FirebaseMessage;
+import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.UserNotAuthenticatedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.Authentication;
@@ -25,7 +26,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Authentication authentication = (Authentication) session.getAttributes().get("Authentication");
         if (authentication == null) {
-            throw new UserNotAuthenticatedException();
+            throw new UserNotAuthenticatedException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
         Long userId = Long.valueOf(authentication.getPrincipal().toString());

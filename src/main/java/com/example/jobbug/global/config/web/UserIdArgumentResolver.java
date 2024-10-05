@@ -1,5 +1,6 @@
 package com.example.jobbug.global.config.web;
 
+import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.UserNotAuthenticatedException;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -23,7 +24,7 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            throw new UserNotAuthenticatedException();
+                throw new UserNotAuthenticatedException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         } else {
             Long userId = Long.valueOf(authentication.getPrincipal().toString());
             return userId;

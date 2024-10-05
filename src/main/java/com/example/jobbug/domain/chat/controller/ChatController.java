@@ -27,8 +27,7 @@ public class ChatController {
     ) {
         messageService.createMessage(request, userId);
         return SuccessNonDataResponse.success(
-                SuccessCode.CREATE_SUCCESS,
-                "채팅 전송 성공"
+                SuccessCode.CREATE_CHAT_SUCCESS
         );
     }
 }

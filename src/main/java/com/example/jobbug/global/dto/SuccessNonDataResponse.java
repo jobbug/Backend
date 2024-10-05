@@ -17,8 +17,4 @@ public class SuccessNonDataResponse extends ApiResponse{
     public static ResponseEntity<?> success(SuccessCode successCode) {
         return ResponseEntity.status(successCode.getHttpStatus()).body(new SuccessNonDataResponse(successCode.getHttpStatus().value(), successCode.getMessage()));
     }
-
-    public static ResponseEntity<?> success(SuccessCode successCode, String message) {
-        return ResponseEntity.status(successCode.getHttpStatus()).body(new SuccessNonDataResponse(successCode.getHttpStatus().value(), message));
-    }
 }

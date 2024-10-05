@@ -40,19 +40,19 @@ public class ChatRoomService {
     public ChatRoomResponse createRoom(CreateRoomRequest request, Long userId) {
 
         if(chatRoomQueryRepository.existsByUserIdInAuthorIdOrParticipantIdAndPostId(userId, request.postId())) {
-            throw new DuplicateException(ErrorCode.ALREADY_ROOM_EXIST, "이미 참여 중인 채팅방입니다.");
+            throw new DuplicateException(ErrorCode.ALREADY_ROOM_EXIST);
         }
 
         User participant = userRepository.findById(userId).orElseThrow(
-                () -> new NotFoundException(String.format("해당 사용자 정보를 찾을 수 없습니다. (ID: %d)", userId))
+                () -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION)
         );
 
         Post post = postRepository.findById(request.postId()).orElseThrow(
-                () -> new NotFoundException(String.format("게시글 정보를 찾을 수 없습니다. (ID: %d)", request.postId()))
+                () -> new NotFoundException(ErrorCode.NOT_FOUND_POST_EXCEPTION)
         );
 
         if(post.getAuthor().getId().equals(userId)) {
-            throw new BadRequestException(ErrorCode.FAILED_ROOM_CREATE, "게시글 작성자는 채팅방을 생성할 수 없습니다.");
+            throw new BadRequestException(ErrorCode.FAILED_ROOM_CREATE);
         }
 
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.builder()

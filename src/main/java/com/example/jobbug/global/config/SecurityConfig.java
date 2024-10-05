@@ -26,7 +26,6 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
-@EnableWebSocketSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 

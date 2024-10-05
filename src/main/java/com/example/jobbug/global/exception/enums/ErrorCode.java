@@ -19,15 +19,16 @@ public enum ErrorCode {
     NOT_CHATROOM_WRITER(HttpStatus.BAD_REQUEST, "E204", "해당 채팅방의 후기를 작성할 권한이 없습니다."),
     NOT_REVIEW_AUTHORIZATION_EXCEPTION(HttpStatus.BAD_REQUEST, "E205", "해당 후기에 대한 조회 권한이 없습니다."),
     FAILED_ROOM_CREATE(HttpStatus.BAD_REQUEST, "E041", "채팅방 생성 실패"),
+    FAILED_TO_SEND_MESSAGE(HttpStatus.BAD_REQUEST, "E042", "메시지 전송 실패"),
+
 
     // 401
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "E401", "인증 정보가 유효하지 않습니다."),
 
     // 403
-    FORBIDDEN_EXCEPTION(HttpStatus.FORBIDDEN, "E403", "접근 권한이 없습니다."),
+    NOT_PARTICIPANT_EXCEPTION(HttpStatus.FORBIDDEN, "E102", "해당 채팅방의 참여자가 아닙니다."),
 
     //404
-    NOT_FOUND_RESOURCE_EXCEPTION(HttpStatus.NOT_FOUND, "E404", "해당 자원을 찾을 수 없습니다."),
     NOT_FOUND_USER_EXCEPTION(HttpStatus.NOT_FOUND, "E000", "해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_ADDRESS_EXCEPTION(HttpStatus.NOT_FOUND, "E301", "해당 주소를 찾을 수 없습니다."),
     NOT_FOUND_POST_EXCEPTION(HttpStatus.NOT_FOUND, "E202", "해당 게시글을 찾을 수 없습니다."),
