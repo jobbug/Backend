@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -25,6 +26,7 @@ import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
+@EnableWebSocketSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -45,7 +47,8 @@ public class SecurityConfig {
     private final RequestMatcher[] permitAllUrlRequestMatchers = {
             new AntPathRequestMatcher("/", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/user/register"),
-            new AntPathRequestMatcher("/oauth2/authorization/google")
+            new AntPathRequestMatcher("/oauth2/authorization/google"),
+            new AntPathRequestMatcher("/api/ws/**")
     };
 
 //    // 인증되지 않은 사용자만 접근 가능한 URI
