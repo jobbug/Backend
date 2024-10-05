@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.reservation.entity;
 
+import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.global.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -24,6 +25,10 @@ public class Reservation extends BaseEntity {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id", nullable = false)
+    private ChatRoom chatRoom;
+
     @Column(name = "address", nullable = false)
     private String address;
 
@@ -37,8 +42,9 @@ public class Reservation extends BaseEntity {
     private LocalDateTime endTime;
 
     @Builder
-    public Reservation(Post post, String address, String addressDetail, LocalDateTime startTime, LocalDateTime endTime) {
+    public Reservation(Post post, ChatRoom chatRoom, String address, String addressDetail, LocalDateTime startTime, LocalDateTime endTime) {
         this.post = post;
+        this.chatRoom = chatRoom;
         this.address = address;
         this.addressDetail = addressDetail;
         this.startTime = startTime;
