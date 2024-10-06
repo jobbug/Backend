@@ -1,6 +1,10 @@
 package com.example.jobbug.domain.chat.dto.request;
 
-public record CreateRoomRequest(
-    Long postId
-) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+public class CreateRoomRequest {
+    private final Long postId;
 }

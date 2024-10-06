@@ -17,6 +17,7 @@ import com.example.jobbug.global.exception.model.NotFoundException;
 import com.google.api.core.ApiFuture;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,7 @@ public class MessageService {
 
     private final MessageIdGenerator messageIdGenerator;
 
+    @Transactional
     public void createMessage(CreateChatRequest request, Long userId) {
 
         // 채팅방 정보 조회
@@ -65,14 +67,12 @@ public class MessageService {
         DatabaseReference roomMessageRef = FirebaseDatabase.getInstance()
                 .getReference("messages");
 
-        ApiFuture<Void> future = roomMessageRef.push().setValueAsync(
-                MessageConverter.mapToFirebase(user, message, chatRoom.getId(), MessageType.MESSAGE)
-        );
-
         messageRepository.save(message);
 
         try {
-            future.get();
+            roomMessageRef.push().setValueAsync(
+                    MessageConverter.mapToFirebase(user, message, chatRoom.getId(), MessageType.MESSAGE)
+            ).get();
         } catch (InterruptedException | ExecutionException e) {
             throw new FirebaseException(ErrorCode.FAILED_TO_SEND_MESSAGE);
         }

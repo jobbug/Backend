@@ -37,9 +37,10 @@ public class ChatRoomService {
     }
 
     // 수락자가 채팅방 생성 요청
+    @Transactional
     public ChatRoomResponse createRoom(CreateRoomRequest request, Long userId) {
 
-        if(chatRoomQueryRepository.existsByUserIdInAuthorIdOrParticipantIdAndPostId(userId, request.postId())) {
+        if(chatRoomQueryRepository.existsByUserIdInAuthorIdOrParticipantIdAndPostId(userId, request.getPostId())) {
             throw new DuplicateException(ErrorCode.ALREADY_ROOM_EXIST);
         }
 
@@ -47,7 +48,7 @@ public class ChatRoomService {
                 () -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION)
         );
 
-        Post post = postRepository.findById(request.postId()).orElseThrow(
+        Post post = postRepository.findById(request.getPostId()).orElseThrow(
                 () -> new NotFoundException(ErrorCode.NOT_FOUND_POST_EXCEPTION)
         );
 
@@ -58,7 +59,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.builder()
                 .author(post.getAuthor())
                 .participant(participant)
-                .postId(request.postId())
+                .postId(request.getPostId())
                 .status("DO") // TODO-HONG : 구현된 것 보고 Enum 변경
                 .build());
 
