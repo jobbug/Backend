@@ -18,12 +18,17 @@ public enum ErrorCode {
     AI_IMAGE_CREATE_EXCEPTION(HttpStatus.BAD_REQUEST, "E302", "AI 이미지 생성에 실패했습니다."),
     NOT_CHATROOM_WRITER(HttpStatus.BAD_REQUEST, "E204", "해당 채팅방의 후기를 작성할 권한이 없습니다."),
     NOT_REVIEW_AUTHORIZATION_EXCEPTION(HttpStatus.BAD_REQUEST, "E205", "해당 후기에 대한 조회 권한이 없습니다."),
+    FAILED_ROOM_CREATE(HttpStatus.BAD_REQUEST, "E041", "채팅방 생성 실패"),
+    FAILED_TO_SEND_MESSAGE(HttpStatus.BAD_REQUEST, "E042", "메시지 전송 실패"),
+
 
     // 401
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "E401", "인증 정보가 유효하지 않습니다."),
 
+    // 403
+    NOT_PARTICIPANT_EXCEPTION(HttpStatus.FORBIDDEN, "E102", "해당 채팅방의 참여자가 아닙니다."),
+
     //404
-    NOT_FOUND_RESOURCE_EXCEPTION(HttpStatus.NOT_FOUND, "E404", "해당 자원을 찾을 수 없습니다."),
     NOT_FOUND_USER_EXCEPTION(HttpStatus.NOT_FOUND, "E000", "해당 유저를 찾을 수 없습니다."),
     NOT_FOUND_ADDRESS_EXCEPTION(HttpStatus.NOT_FOUND, "E301", "해당 주소를 찾을 수 없습니다."),
     NOT_FOUND_POST_EXCEPTION(HttpStatus.NOT_FOUND, "E202", "해당 게시글을 찾을 수 없습니다."),
@@ -32,6 +37,9 @@ public enum ErrorCode {
 
     // 405 METHOD_NOT_ALLOWED
     METHOD_NOT_ALLOWED_EXCEPTION(HttpStatus.METHOD_NOT_ALLOWED, "E405", "지원하지 않는 메소드 입니다."),
+
+    // 409
+    ALREADY_ROOM_EXIST(HttpStatus.BAD_REQUEST, "E042", "이미 존재하는 채팅방입니다."),
 
     // 500
     INTERNAL_SERVER_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "E500", "서버 내부 오류입니다."),
