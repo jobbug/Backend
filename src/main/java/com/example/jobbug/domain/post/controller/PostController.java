@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.example.jobbug.global.exception.enums.SuccessCode.GET_USER_REQUESTS_SUCCESS;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -123,6 +125,17 @@ public class PostController {
             postService.updatePost(userId, postId, request);
             return SuccessNonDataResponse.success(SuccessCode.UPDATE_POST_SUCCESS);
         } catch (NotFoundException | BadRequestException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @GetMapping("/post/user/{userId}/requests")
+    public ResponseEntity<?> getUserRequests(
+            @PathVariable Long userId
+    ) {
+        try {
+            return SuccessResponse.success(GET_USER_REQUESTS_SUCCESS, postService.getUserRequests(userId));
+        } catch (NotFoundException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
     }

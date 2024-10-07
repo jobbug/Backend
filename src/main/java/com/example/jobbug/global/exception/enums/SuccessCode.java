@@ -25,6 +25,7 @@ public enum SuccessCode {
     CANCEL_RESERVATION_SUCCESS(HttpStatus.OK, "예약 취소 성공입니다."),
     CANCEL_POST_SUCCESS(HttpStatus.OK, "게시글 취소 성공입니다."),
     UPDATE_POST_SUCCESS(HttpStatus.OK, "게시글 수정 성공입니다."),
+    GET_USER_REQUESTS_SUCCESS(HttpStatus.OK, "회원 요청 내역 조회 성공입니다."),
 
     // 201
     CREATE_ROOM_SUCCESS(HttpStatus.CREATED, "채팅방 생성 성공입니다."),
