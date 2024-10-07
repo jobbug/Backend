@@ -140,4 +140,15 @@ public class PostController {
         }
     }
 
+    @GetMapping("/post/user/{userId}/acceptances")
+    public ResponseEntity<?> getUserAcceptances(
+            @PathVariable Long userId
+    ) {
+        try {
+            return SuccessResponse.success(SuccessCode.GET_USER_ACCEPTANCES_SUCCESS, postService.getUserAcceptances(userId));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
 }

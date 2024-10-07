@@ -196,6 +196,15 @@ public class PostService {
         return PostConverter.toGetUserRequestsResponse(posts, author, reviewRepository);
     }
 
+    @Transactional
+    public GetUserAcceptancesResponse getUserAcceptances(Long userId) {
+        User participant = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByParticipantIdAndStatusOrderByUpdatedAtDesc(participant.getId(), ChatRoomStatus.MATCHED);
+        return PostConverter.toGetUserAcceptancesResponse(chatRooms, participant, reviewRepository, postRepository);
+    }
+
     // Haversine 공식 기반 거리 계산 (단위: km)
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371;
