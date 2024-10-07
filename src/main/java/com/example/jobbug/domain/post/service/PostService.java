@@ -7,6 +7,7 @@ import com.example.jobbug.domain.post.dto.response.MainPostInfoResponse;
 import com.example.jobbug.domain.post.dto.response.PostDetailInfoResponse;
 import com.example.jobbug.domain.post.dto.response.SavePostResponse;
 import com.example.jobbug.domain.post.entity.Post;
+import com.example.jobbug.domain.post.enums.PostStatus;
 import com.example.jobbug.domain.post.repository.PostRepository;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
@@ -128,7 +129,7 @@ public class PostService {
         }
 
         Pageable pageable = PageRequest.of(pageNum, 5, sortBy);
-        Page<Post> page = postRepository.findAllByStatus("진행중", pageable);
+        Page<Post> page = postRepository.findAllByStatus(PostStatus.DO, pageable);
 
         List<Post> filteredPosts = page.getContent().stream()
                 .filter(post -> calculateDistance(userLat, userLon, post.getLatitude(), post.getLongitude()) <= 3)  // 3km 이내만 필터링
