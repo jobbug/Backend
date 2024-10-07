@@ -4,15 +4,13 @@ import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.global.domain.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reservation extends BaseEntity {
 
@@ -42,7 +40,8 @@ public class Reservation extends BaseEntity {
     private LocalDateTime endTime;
 
     @Builder
-    public Reservation(Post post, ChatRoom chatRoom, String address, String addressDetail, LocalDateTime startTime, LocalDateTime endTime) {
+    public Reservation(Long id, Post post, ChatRoom chatRoom, String address, String addressDetail, LocalDateTime startTime, LocalDateTime endTime) {
+        this.id = id;
         this.post = post;
         this.chatRoom = chatRoom;
         this.address = address;
