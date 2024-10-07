@@ -4,6 +4,7 @@ import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.post.service.PostService;
 import com.example.jobbug.global.config.web.UserId;
 import com.example.jobbug.global.dto.ErrorResponse;
+import com.example.jobbug.global.dto.SuccessNonDataResponse;
 import com.example.jobbug.global.dto.SuccessResponse;
 import com.example.jobbug.global.exception.enums.SuccessCode;
 import com.example.jobbug.global.exception.model.AIException;
@@ -94,6 +95,19 @@ public class PostController {
         try {
             return SuccessResponse.success(SuccessCode.GET_POST_DETAIL_SUCCESS, postService.getPostDetail(postId));
         } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @PatchMapping("/post/{postId}/cancel")
+    public ResponseEntity<?> cancelPost(
+            @UserId Long userId,
+            @PathVariable Long postId
+    ) {
+        try {
+            postService.cancelPost(userId, postId);
+            return SuccessNonDataResponse.success(SuccessCode.CANCEL_POST_SUCCESS);
+        } catch (NotFoundException | BadRequestException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
     }

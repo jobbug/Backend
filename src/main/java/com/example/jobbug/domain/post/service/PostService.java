@@ -153,6 +153,20 @@ public class PostService {
         return PostConverter.toPostDetailInfoResponse(post);
     }
 
+    @Transactional
+    public void cancelPost(Long UserId, Long postId) {
+        User user = userRepository.findById(UserId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        Post post = postRepository.findByIdAndAuthor(postId, user).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_POST_EXCEPTION)
+        );
+        if(!post.getStatus().equals(PostStatus.DO)) {
+            throw new BadRequestException(CANCEL_POST_EXCEPTION);
+        }
+        post.cancel();
+    }
+
     // Haversine 공식 기반 거리 계산 (단위: km)
     private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371;

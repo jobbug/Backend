@@ -116,5 +116,9 @@ public class Post extends BaseEntity {
     public void updateStatus() {
         this.status = PostStatus.DONE;
     }
+
+    public void cancel() {
+        this.status = PostStatus.CANCEL;
+    }
 }
 
