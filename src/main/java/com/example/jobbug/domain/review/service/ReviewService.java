@@ -41,7 +41,7 @@ public class ReviewService {
             throw new BadRequestException(ErrorCode.NOT_CHATROOM_WRITER);
         }
 
-        Review review = Review.of(user, chatRoom, request);
+        Review review = Review.of(user, chatRoom, post, request);
         reviewRepository.save(review);
         post.finish();
         postRepository.save(post);
