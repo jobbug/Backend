@@ -2,6 +2,8 @@ package com.example.jobbug.domain.review.service;
 
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
+import com.example.jobbug.domain.post.entity.Post;
+import com.example.jobbug.domain.post.repository.PostRepository;
 import com.example.jobbug.domain.review.converter.ReviewConverter;
 import com.example.jobbug.domain.review.dto.request.SaveReviewRequest;
 import com.example.jobbug.domain.review.dto.response.ReviewDetailInfoResponse;
@@ -24,6 +26,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ReviewRepository reviewRepository;
+    private final PostRepository postRepository;
 
     @Transactional
     public void saveReview(Long userId, SaveReviewRequest request) {
@@ -31,6 +34,8 @@ public class ReviewService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
         ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION));
+        Post post = postRepository.findById(chatRoom.getPostId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST_EXCEPTION));
 
         if (!chatRoom.getAuthor().equals(user)) {
             throw new BadRequestException(ErrorCode.NOT_CHATROOM_WRITER);
@@ -38,6 +43,8 @@ public class ReviewService {
 
         Review review = Review.of(user, chatRoom, request);
         reviewRepository.save(review);
+        post.updateStatus();
+        postRepository.save(post);
     }
 
     public ReviewDetailInfoResponse getReview(Long userId, Long reviewId) {

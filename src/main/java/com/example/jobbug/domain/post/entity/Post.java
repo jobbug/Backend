@@ -2,6 +2,7 @@ package com.example.jobbug.domain.post.entity;
 
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.post.enums.PostStatus;
+import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
@@ -110,6 +111,10 @@ public class Post extends BaseEntity {
                 .latitude(latitude)
                 .longitude(longitude)
                 .build();
+    }
+
+    public void updateStatus() {
+        this.status = PostStatus.DONE;
     }
 }
 
