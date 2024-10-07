@@ -46,6 +46,7 @@ public enum ErrorCode {
     // 409
     ALREADY_ROOM_EXIST(HttpStatus.BAD_REQUEST, "E042", "이미 존재하는 채팅방입니다."),
     DUPLICATED_RESERVATION_EXCEPTION(HttpStatus.CONFLICT, "E055", "이미 예약이 진행중입니다."),
+    DUPLICATE_NICKNAME_EXCEPTION(HttpStatus.CONFLICT, "E060", "중복된 닉네임입니다."),
 
     // 500
     INTERNAL_SERVER_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "E500", "서버 내부 오류입니다."),

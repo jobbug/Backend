@@ -15,6 +15,7 @@ public enum SuccessCode {
     REGISTER_SUCCESS(HttpStatus.OK, "회원가입 성공입니다."),
     LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃 성공입니다."),
     GET_USER_INFO_SUCCESS(HttpStatus.OK, "유저 정보 조회 성공입니다."),
+    CHECK_DUPLICATE_NICKNAME_SUCCESS(HttpStatus.OK, "사용 가능한 닉네임"),
     GET_MAIN_POST_SUCCESS(HttpStatus.OK, "메인 잡아주세요 조회 성공입니다."),
     GET_POST_DETAIL_SUCCESS(HttpStatus.OK, "게시글 상세 조회 성공입니다."),
     GET_REVIEW_SUCCESS(HttpStatus.OK, "후기 상세 조회 성공입니다."),

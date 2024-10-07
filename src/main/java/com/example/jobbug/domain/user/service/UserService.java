@@ -7,6 +7,7 @@ import com.example.jobbug.domain.user.dto.response.UserRegisterResponse;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.enums.ErrorCode;
+import com.example.jobbug.global.exception.model.DuplicateException;
 import com.example.jobbug.global.exception.model.NotFoundException;
 import com.example.jobbug.global.exception.model.S3Exception;
 import com.example.jobbug.global.exception.model.TokenException;
@@ -99,4 +100,9 @@ public class UserService {
         return "https://jobbug-bucket.s3.ap-northeast-2.amazonaws.com/defaultprofile.svg";
     }
 
+    public void checkDuplicate(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME_EXCEPTION);
+        }
+    }
 }

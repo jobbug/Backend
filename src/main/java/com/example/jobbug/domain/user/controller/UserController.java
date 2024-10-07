@@ -3,7 +3,6 @@ package com.example.jobbug.domain.user.controller;
 import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
 import com.example.jobbug.domain.user.service.UserService;
 import com.example.jobbug.global.config.web.UserId;
-import com.example.jobbug.global.dto.ApiResponse;
 import com.example.jobbug.global.dto.ErrorResponse;
 import com.example.jobbug.global.dto.SuccessNonDataResponse;
 import com.example.jobbug.global.dto.SuccessResponse;
@@ -12,7 +11,6 @@ import com.example.jobbug.global.exception.model.TokenException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,6 +52,14 @@ public class UserController {
         } catch (NotFoundException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
+    }
+
+    @GetMapping("/duplicate")
+    public ResponseEntity<?> checkDuplicate(
+            @RequestParam String nickname
+    ) {
+        userService.checkDuplicate(nickname);
+        return SuccessNonDataResponse.success(CHECK_DUPLICATE_NICKNAME_SUCCESS);
     }
 
     @GetMapping("/test")
