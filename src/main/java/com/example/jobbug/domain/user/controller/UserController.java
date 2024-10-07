@@ -56,11 +56,5 @@ public class UserController {
         }
     }
 
-    @GetMapping("/test")
-    public String test(
-            @UserId Long userId
-    ) {
-        return "test " + userId;
-    }
 }
 
