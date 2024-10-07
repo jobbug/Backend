@@ -192,7 +192,7 @@ public class PostService {
         User author = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
         );
-        List<Post> posts = postRepository.findAllByAuthor(author);
+        List<Post> posts = postRepository.findAllByAuthorOrderByCreatedAtDesc(author);
         return PostConverter.toGetUserRequestsResponse(posts, author, reviewRepository);
     }
 
