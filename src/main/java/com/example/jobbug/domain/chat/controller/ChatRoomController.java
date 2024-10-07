@@ -29,8 +29,7 @@ public class ChatRoomController {
         // 사용자 아이디 출력
         return SuccessResponse.success(
                 SuccessCode.CREATE_ROOM_SUCCESS,
-                chatRoomService.createRoom(request, userId),
-                "채팅방 생성 성공"
+                chatRoomService.createRoom(request, userId)
         );
     }
 
@@ -40,8 +39,7 @@ public class ChatRoomController {
     ) {
         return SuccessResponse.success(
                 SuccessCode.GET_ROOM_SUCCESS,
-                new ListWrapperResponse(chatRoomService.findAllByUserId(userId)),
-                "모든 채팅방 조회 성공"
+                new ListWrapperResponse(chatRoomService.findAllByUserId(userId))
         );
         
     }
