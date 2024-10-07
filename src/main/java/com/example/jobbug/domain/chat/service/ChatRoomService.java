@@ -8,6 +8,7 @@ import com.example.jobbug.domain.chat.repository.ChatRoomQueryRepository;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.post.repository.PostRepository;
+import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.enums.ErrorCode;
@@ -60,7 +61,7 @@ public class ChatRoomService {
                 .author(post.getAuthor())
                 .participant(participant)
                 .postId(request.getPostId())
-                .status("DO") // TODO-HONG : 구현된 것 보고 Enum 변경
+                .status(ChatRoomStatus.DO)
                 .build());
 
         return ChatRoomConverter.mapToResponse(chatRoom);

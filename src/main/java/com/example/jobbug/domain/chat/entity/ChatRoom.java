@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.chat.entity;
 
+import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
@@ -32,21 +33,26 @@ public class ChatRoom extends BaseEntity {
     @Column(name = "post_id", nullable = false)
     private Long postId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private ChatRoomStatus status = ChatRoomStatus.DO;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
 
-    @OneToOne(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Reservation reservation;
 
     @Builder
-    public ChatRoom(User author, User participant, Long postId, String status) {
+    public ChatRoom(User author, User participant, Long postId, ChatRoomStatus status) {
         this.author = author;
         this.participant = participant;
         this.postId = postId;
         this.status = status;
+    }
+
+    public void matchReservation() {
+        this.status = ChatRoomStatus.MATCHED;
     }
 }
 
