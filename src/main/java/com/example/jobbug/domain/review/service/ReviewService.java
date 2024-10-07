@@ -43,7 +43,7 @@ public class ReviewService {
 
         Review review = Review.of(user, chatRoom, request);
         reviewRepository.save(review);
-        post.updateStatus();
+        post.finish();
         postRepository.save(post);
     }
 

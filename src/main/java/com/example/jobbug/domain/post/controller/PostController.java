@@ -1,6 +1,7 @@
 package com.example.jobbug.domain.post.controller;
 
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
+import com.example.jobbug.domain.post.dto.request.UpdatePostRequest;
 import com.example.jobbug.domain.post.service.PostService;
 import com.example.jobbug.global.config.web.UserId;
 import com.example.jobbug.global.dto.ErrorResponse;
@@ -107,6 +108,20 @@ public class PostController {
         try {
             postService.cancelPost(userId, postId);
             return SuccessNonDataResponse.success(SuccessCode.CANCEL_POST_SUCCESS);
+        } catch (NotFoundException | BadRequestException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @PatchMapping("/post/{postId}/edit")
+    public ResponseEntity<?> editPost(
+            @UserId Long userId,
+            @PathVariable Long postId,
+            @RequestBody UpdatePostRequest request
+    ) {
+        try {
+            postService.updatePost(userId, postId, request);
+            return SuccessNonDataResponse.success(SuccessCode.UPDATE_POST_SUCCESS);
         } catch (NotFoundException | BadRequestException e) {
             return ErrorResponse.error(e.getErrorCode());
         }

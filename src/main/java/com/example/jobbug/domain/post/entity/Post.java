@@ -113,12 +113,17 @@ public class Post extends BaseEntity {
                 .build();
     }
 
-    public void updateStatus() {
+    public void finish() {
         this.status = PostStatus.DONE;
     }
 
     public void cancel() {
         this.status = PostStatus.CANCEL;
+    }
+
+    public void updateTime(String startTime, String endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }
 
