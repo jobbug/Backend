@@ -18,8 +18,4 @@ public class SuccessResponse<T> extends ApiResponse{
     public static <T> ResponseEntity<?> success(SuccessCode successCode, T data) {
         return ResponseEntity.status(successCode.getHttpStatus()).body(new SuccessResponse(successCode.getHttpStatus().value(), successCode.getMessage(), data));
     }
-
-    public static <T> ResponseEntity<?> success(SuccessCode successCode, T data, String message) {
-        return ResponseEntity.status(successCode.getHttpStatus()).body(new SuccessResponse(successCode.getHttpStatus().value(), message, data));
-    }
 }
