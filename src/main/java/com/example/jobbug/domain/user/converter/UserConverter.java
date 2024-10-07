@@ -23,6 +23,9 @@ public class UserConverter {
                 .nickname(user.getNickname())
                 .email(user.getEmail())
                 .profileImageUrl(user.getProfile())
+                .phone(user.getPhone())
+                .addr(user.getAddr())
+                .detailAddr(user.getDetail_addr())
                 .build();
     }
 }
