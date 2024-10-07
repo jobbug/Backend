@@ -1,6 +1,7 @@
 package com.example.jobbug.domain.post.repository;
 
 import com.example.jobbug.domain.post.entity.Post;
+import com.example.jobbug.domain.post.enums.PostStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +19,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByLatitudeBetweenAndLongitudeBetween(
             double latMin, double latMax, double lonMin, double lonMax, Pageable pageable
     );
-    Page<Post> findAllByStatus(String status, Pageable pageable);
+    Page<Post> findAllByStatus(PostStatus status, Pageable pageable);
 }

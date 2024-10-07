@@ -3,6 +3,8 @@ package com.example.jobbug.domain.main.service;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.main.converter.MainConverter;
 import com.example.jobbug.domain.main.dto.response.MainSummaryResponse;
+import com.example.jobbug.domain.post.enums.PostStatus;
+import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.review.entity.Review;
 import com.example.jobbug.domain.review.repository.ReviewRepository;
 import com.example.jobbug.domain.user.entity.User;
@@ -37,7 +39,7 @@ public class MainService {
 
     private List<ChatRoom> getNotReviewedChatRooms(User user) {
         return user.getCreatedChatRooms().stream()
-                .filter(chatRoom -> "수락".equals(chatRoom.getStatus()))  // 예약 완료된 chatRoom
+                .filter(chatRoom -> ChatRoomStatus.MATCHED.equals(chatRoom.getStatus()))  // 예약 완료된 chatRoom
                 .filter(chatRoom -> chatRoom.getReservation().getEndTime().isBefore(LocalDateTime.now()))  // EndTime이 지난 chatRoom
                 .filter(chatRoom -> reviewRepository.findByRoomId(chatRoom).isEmpty())  // Review가 없는 chatRoom
                 .toList();
@@ -45,7 +47,7 @@ public class MainService {
 
     private int getOngoingPostCount(User user) {
         return (int) user.getPosts().stream()
-                .filter(post -> "진행중".equals(post.getStatus()))
+                .filter(post -> PostStatus.DO.equals(post.getStatus()))
                 .count();
     }
 }

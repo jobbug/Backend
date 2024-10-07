@@ -1,6 +1,7 @@
 package com.example.jobbug.domain.post.entity;
 
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
+import com.example.jobbug.domain.post.enums.PostStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
@@ -44,8 +45,9 @@ public class Post extends BaseEntity {
     @Column(name = "edited_image")
     private String editedImage;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private PostStatus status;
 
     @Column(name = "addr", nullable = false)
     private String addr;
@@ -72,7 +74,7 @@ public class Post extends BaseEntity {
     private List<Reservation> reservations = new ArrayList<>();
 
     @Builder
-    public Post(User author, String title, String content, String bugType, String bugName, String originImage, String editedImage, String status, String addr, String detailAddr, double latitude, double longitude, String startTime, String endTime, String reward) {
+    public Post(User author, String title, String content, String bugType, String bugName, String originImage, String editedImage, PostStatus status, String addr, String detailAddr, double latitude, double longitude, String startTime, String endTime, String reward) {
         this.author = author;
         this.title = title;
         this.content = content;
@@ -104,7 +106,7 @@ public class Post extends BaseEntity {
                 .reward(request.getReward())
                 .originImage(request.getOriginImageUrl())
                 .editedImage(request.getEditedImageUrl())
-                .status("진행중")
+                .status(PostStatus.DO)
                 .latitude(latitude)
                 .longitude(longitude)
                 .build();
