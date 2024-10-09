@@ -13,6 +13,7 @@ public enum SuccessCode {
      */
     // 200
     REGISTER_SUCCESS(HttpStatus.OK, "회원가입 성공입니다."),
+    UPDATE_USER_SUCCESS(HttpStatus.OK, "유저 정보 수정 성공입니다."),
     LOGOUT_SUCCESS(HttpStatus.OK, "로그아웃 성공입니다."),
     GET_USER_INFO_SUCCESS(HttpStatus.OK, "유저 정보 조회 성공입니다."),
     CHECK_DUPLICATE_NICKNAME_SUCCESS(HttpStatus.OK, "사용 가능한 닉네임"),

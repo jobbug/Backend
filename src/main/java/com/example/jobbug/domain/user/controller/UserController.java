@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.user.controller;
 
+import com.example.jobbug.domain.user.dto.request.UpdateUserRequest;
 import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
 import com.example.jobbug.domain.user.service.UserService;
 import com.example.jobbug.global.config.web.UserId;
@@ -32,6 +33,15 @@ public class UserController {
         } catch (TokenException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
+    }
+
+    @PatchMapping
+    public ResponseEntity<?> updateUser(
+            @UserId Long userId,
+            @ModelAttribute UpdateUserRequest request
+    ) {
+        userService.updateUser(userId, request);
+        return SuccessNonDataResponse.success(UPDATE_USER_SUCCESS);
     }
 
     @PostMapping("/logout")
