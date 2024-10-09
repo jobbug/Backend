@@ -20,6 +20,8 @@ public enum ErrorCode {
     NOT_REVIEW_AUTHORIZATION_EXCEPTION(HttpStatus.BAD_REQUEST, "E205", "해당 후기에 대한 조회 권한이 없습니다."),
     FAILED_ROOM_CREATE(HttpStatus.BAD_REQUEST, "E041", "채팅방 생성 실패"),
     FAILED_TO_SEND_MESSAGE(HttpStatus.BAD_REQUEST, "E042", "메시지 전송 실패"),
+    CANCEL_POST_EXCEPTION(HttpStatus.BAD_REQUEST, "E065", "해당 게시글 상태는 진행중이 아닙니다."),
+    UPDATE_POST_EXCEPTION(HttpStatus.BAD_REQUEST, "E066", "해당 게시글 상태는 매칭전/진행중이 아닙니다."),
 
 
     // 401

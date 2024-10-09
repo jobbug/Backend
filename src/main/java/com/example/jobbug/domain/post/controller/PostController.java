@@ -1,9 +1,11 @@
 package com.example.jobbug.domain.post.controller;
 
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
+import com.example.jobbug.domain.post.dto.request.UpdatePostRequest;
 import com.example.jobbug.domain.post.service.PostService;
 import com.example.jobbug.global.config.web.UserId;
 import com.example.jobbug.global.dto.ErrorResponse;
+import com.example.jobbug.global.dto.SuccessNonDataResponse;
 import com.example.jobbug.global.dto.SuccessResponse;
 import com.example.jobbug.global.exception.enums.SuccessCode;
 import com.example.jobbug.global.exception.model.AIException;
@@ -14,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.example.jobbug.global.exception.enums.SuccessCode.GET_USER_REQUESTS_SUCCESS;
 
 @RestController
 @RequestMapping("/api")
@@ -93,6 +97,55 @@ public class PostController {
     ) {
         try {
             return SuccessResponse.success(SuccessCode.GET_POST_DETAIL_SUCCESS, postService.getPostDetail(postId));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @PatchMapping("/post/{postId}/cancel")
+    public ResponseEntity<?> cancelPost(
+            @UserId Long userId,
+            @PathVariable Long postId
+    ) {
+        try {
+            postService.cancelPost(userId, postId);
+            return SuccessNonDataResponse.success(SuccessCode.CANCEL_POST_SUCCESS);
+        } catch (NotFoundException | BadRequestException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @PatchMapping("/post/{postId}/edit")
+    public ResponseEntity<?> editPost(
+            @UserId Long userId,
+            @PathVariable Long postId,
+            @RequestBody UpdatePostRequest request
+    ) {
+        try {
+            postService.updatePost(userId, postId, request);
+            return SuccessNonDataResponse.success(SuccessCode.UPDATE_POST_SUCCESS);
+        } catch (NotFoundException | BadRequestException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @GetMapping("/post/user/{userId}/requests")
+    public ResponseEntity<?> getUserRequests(
+            @PathVariable Long userId
+    ) {
+        try {
+            return SuccessResponse.success(GET_USER_REQUESTS_SUCCESS, postService.getUserRequests(userId));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @GetMapping("/post/user/{userId}/acceptances")
+    public ResponseEntity<?> getUserAcceptances(
+            @PathVariable Long userId
+    ) {
+        try {
+            return SuccessResponse.success(SuccessCode.GET_USER_ACCEPTANCES_SUCCESS, postService.getUserAcceptances(userId));
         } catch (NotFoundException e) {
             return ErrorResponse.error(e.getErrorCode());
         }

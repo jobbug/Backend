@@ -1,14 +1,16 @@
 package com.example.jobbug.domain.post.service;
 
+import com.example.jobbug.domain.chat.entity.ChatRoom;
+import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.post.converter.PostConverter;
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
-import com.example.jobbug.domain.post.dto.response.ImageUploadResponse;
-import com.example.jobbug.domain.post.dto.response.MainPostInfoResponse;
-import com.example.jobbug.domain.post.dto.response.PostDetailInfoResponse;
-import com.example.jobbug.domain.post.dto.response.SavePostResponse;
+import com.example.jobbug.domain.post.dto.request.UpdatePostRequest;
+import com.example.jobbug.domain.post.dto.response.*;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.post.enums.PostStatus;
 import com.example.jobbug.domain.post.repository.PostRepository;
+import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
+import com.example.jobbug.domain.review.repository.ReviewRepository;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.model.AIException;
@@ -25,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +50,7 @@ import static com.example.jobbug.global.exception.enums.ErrorCode.*;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final ReviewRepository reviewRepository;
     @Value("${kakao.rest-api-key}")
     private String kakaoApiKey;
 
@@ -56,6 +60,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final AIService aiService;
     private final S3Service s3Service;
 
@@ -151,6 +156,53 @@ public class PostService {
                 () -> new NotFoundException(NOT_FOUND_POST_EXCEPTION)
         );
         return PostConverter.toPostDetailInfoResponse(post);
+    }
+
+    @Transactional
+    public void cancelPost(Long UserId, Long postId) {
+        User user = userRepository.findById(UserId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        Post post = postRepository.findByIdAndAuthor(postId, user).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_POST_EXCEPTION)
+        );
+        if(!post.getStatus().equals(PostStatus.DO)) {
+            throw new BadRequestException(CANCEL_POST_EXCEPTION);
+        }
+        post.cancel();
+    }
+
+    @Transactional
+    public void updatePost(Long userId, Long postId, UpdatePostRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        Post post = postRepository.findByIdAndAuthor(postId, user).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_POST_EXCEPTION)
+        );
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByPostIdAndStatus(postId, ChatRoomStatus.MATCHED);
+        if(!(post.getStatus().equals(PostStatus.DO)) || !(chatRooms.isEmpty())) {
+            throw new BadRequestException(UPDATE_POST_EXCEPTION);
+        }
+        post.updateTime(request.getStartTime(), request.getEndTime());
+    }
+
+    @Transactional
+    public GetUserRequestsResponse getUserRequests(Long userId) {
+        User author = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        List<Post> posts = postRepository.findAllByAuthorOrderByCreatedAtDesc(author);
+        return PostConverter.toGetUserRequestsResponse(posts, author, reviewRepository);
+    }
+
+    @Transactional
+    public GetUserAcceptancesResponse getUserAcceptances(Long userId) {
+        User participant = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByParticipantIdAndStatusOrderByUpdatedAtDesc(participant.getId(), ChatRoomStatus.MATCHED);
+        return PostConverter.toGetUserAcceptancesResponse(chatRooms, participant, reviewRepository, postRepository);
     }
 
     // Haversine 공식 기반 거리 계산 (단위: km)

@@ -1,6 +1,7 @@
 package com.example.jobbug.domain.review.entity;
 
 import com.example.jobbug.domain.chat.entity.ChatRoom;
+import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.review.dto.request.SaveReviewRequest;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
@@ -47,8 +48,12 @@ public class Review extends BaseEntity {
     @Column(name = "isSuccess", nullable = false)
     private char isSuccess;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+
     @Builder
-    public Review(User writer, User author, ChatRoom roomId, int lateTime, String content, int point, boolean isArrive, char isSuccess) {
+    public Review(User writer, User author, ChatRoom roomId, Post post, int lateTime, String content, int point, boolean isArrive, char isSuccess) {
         this.writer = writer;
         this.author = author;
         this.roomId = roomId;
@@ -57,13 +62,15 @@ public class Review extends BaseEntity {
         this.point = point;
         this.isArrive = isArrive;
         this.isSuccess = isSuccess;
+        this.post = post;
     }
 
-    public static Review of(User writer, ChatRoom chatRoom, SaveReviewRequest request){
+    public static Review of(User writer, ChatRoom chatRoom, Post post, SaveReviewRequest request){
         return Review.builder()
                 .writer(writer)
                 .author(chatRoom.getParticipant())
                 .roomId(chatRoom)
+                .post(post)
                 .lateTime(request.getLateTime())
                 .content(request.getContent())
                 .point(request.getPoint())

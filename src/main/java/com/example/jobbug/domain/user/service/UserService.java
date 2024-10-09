@@ -1,8 +1,11 @@
 package com.example.jobbug.domain.user.service;
 
+import com.example.jobbug.domain.review.entity.Review;
+import com.example.jobbug.domain.review.repository.ReviewRepository;
 import com.example.jobbug.domain.user.converter.UserConverter;
 import com.example.jobbug.domain.user.dto.request.UpdateUserRequest;
 import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
+import com.example.jobbug.domain.user.dto.response.GetUserProfileResponse;
 import com.example.jobbug.domain.user.dto.response.UserInfoResponse;
 import com.example.jobbug.domain.user.dto.response.UserRegisterResponse;
 import com.example.jobbug.domain.user.entity.User;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.example.jobbug.global.exception.enums.ErrorCode.INVALID_TOKEN_EXCEPTION;
 import static com.example.jobbug.global.exception.enums.ErrorCode.S3_UPLOAD_FAILED;
@@ -35,6 +39,7 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final ReviewRepository reviewRepository;
 
     // 회원가입
     @Transactional
@@ -69,11 +74,24 @@ public class UserService {
     }
 
     // 유저 정보 조회
+    @Transactional
     public UserInfoResponse getUserInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
 
         return UserConverter.toUserInfoResponse(user);
+    }
+
+    // 특정 유저 프로필 조회
+    @Transactional
+    public GetUserProfileResponse getUserProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+        int postCount = user.getPosts().size();
+        List<Review> reviews = reviewRepository.findByAuthor(user);
+        int acceptanceCount = reviews.size();
+
+        return UserConverter.toGetUserProfileResponse(user, postCount, acceptanceCount);
     }
 
 

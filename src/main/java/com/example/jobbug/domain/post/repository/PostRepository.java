@@ -2,10 +2,14 @@ package com.example.jobbug.domain.post.repository;
 
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.post.enums.PostStatus;
+import com.example.jobbug.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -20,4 +24,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             double latMin, double latMax, double lonMin, double lonMax, Pageable pageable
     );
     Page<Post> findAllByStatus(PostStatus status, Pageable pageable);
+
+    Optional<Post> findByIdAndAuthor(Long postId, User author);
+
+    List<Post> findAllByAuthorOrderByCreatedAtDesc(User author);
 }

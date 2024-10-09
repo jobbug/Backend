@@ -12,5 +12,6 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByRoomId(ChatRoom chatRoom);
     List<Review> findByAuthor(User user);
+    Review findByPostId(Long postId);
 }
 

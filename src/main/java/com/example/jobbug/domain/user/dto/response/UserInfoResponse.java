@@ -1,6 +1,5 @@
 package com.example.jobbug.domain.user.dto.response;
 
-import com.example.jobbug.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,4 +11,7 @@ public class UserInfoResponse {
     private String nickname;
     private String email;
     private String profileImageUrl;
+    private String phone;
+    private String addr;
+    private String detailAddr;
 }
