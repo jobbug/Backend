@@ -6,10 +6,8 @@ import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.review.entity.Review;
 import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,21 +28,27 @@ public class User {
     @Column(name = "provider_id", nullable = false)
     private String providerId;
 
+    @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Setter
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
+    @Setter
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @Setter
     @Column(name = "addr", nullable = false)
     private String addr;
 
+    @Setter
     @Column(name = "detail_addr")
     private String detail_addr;
 
+    @Setter
     @Column(name = "profile", nullable = false)
     private String profile;
 
