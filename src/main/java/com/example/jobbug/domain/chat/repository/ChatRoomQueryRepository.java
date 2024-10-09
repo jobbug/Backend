@@ -1,7 +1,6 @@
 package com.example.jobbug.domain.chat.repository;
 
 
-import com.example.jobbug.domain.chat.dto.response.ChatRoomResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.QChatRoom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
