@@ -2,6 +2,7 @@ package com.example.jobbug.domain.chat.service;
 
 import com.example.jobbug.domain.chat.converter.MessageConverter;
 import com.example.jobbug.domain.chat.dto.request.CreateChatRequest;
+import com.example.jobbug.domain.chat.dto.response.MessageResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.Message;
 import com.example.jobbug.domain.chat.entity.firebase.MessageType;
@@ -19,8 +20,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -76,5 +80,20 @@ public class MessageService {
         } catch (InterruptedException | ExecutionException e) {
             throw new FirebaseException(ErrorCode.FAILED_TO_SEND_MESSAGE);
         }
+    }
+
+    public List<MessageResponse> loadMessages(Long roomId) {
+
+        // TODO-HONG : 입력 받기
+        int page = 0;
+        int size = 30;
+
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION)
+        );
+
+        return messageRepository.findAllByChatRoomIdOrderByCreatedAtDesc(
+                chatRoom.getId(), PageRequest.of(page, size)
+        ).map(MessageConverter::mapToResponse).getContent();
     }
 }

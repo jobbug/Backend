@@ -9,8 +9,6 @@ import com.example.jobbug.global.exception.enums.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -39,8 +37,19 @@ public class ChatRoomController {
     ) {
         return SuccessResponse.success(
                 SuccessCode.GET_ROOM_SUCCESS,
-                new ListWrapperResponse(chatRoomService.findAllByUserId(userId))
+                new ListWrapperResponse(chatRoomService.loadAll(userId))
         );
         
+    }
+
+    @GetMapping("/{roomId}")
+    public ResponseEntity<?> load(
+            @UserId Long userId,
+            @PathVariable Long roomId
+    ) {
+        return SuccessResponse.success(
+                SuccessCode.GET_ROOM_SUCCESS,
+                chatRoomService.load(userId, roomId)
+        );
     }
 }

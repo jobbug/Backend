@@ -3,6 +3,7 @@ package com.example.jobbug.domain.user.service;
 import com.example.jobbug.domain.review.entity.Review;
 import com.example.jobbug.domain.review.repository.ReviewRepository;
 import com.example.jobbug.domain.user.converter.UserConverter;
+import com.example.jobbug.domain.user.dto.request.UpdateUserRequest;
 import com.example.jobbug.domain.user.dto.request.UserRegisterRequest;
 import com.example.jobbug.domain.user.dto.response.GetUserProfileResponse;
 import com.example.jobbug.domain.user.dto.response.UserInfoResponse;
@@ -10,6 +11,7 @@ import com.example.jobbug.domain.user.dto.response.UserRegisterResponse;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.enums.ErrorCode;
+import com.example.jobbug.global.exception.model.DuplicateException;
 import com.example.jobbug.global.exception.model.NotFoundException;
 import com.example.jobbug.global.exception.model.S3Exception;
 import com.example.jobbug.global.exception.model.TokenException;
@@ -117,4 +119,48 @@ public class UserService {
         return "https://jobbug-bucket.s3.ap-northeast-2.amazonaws.com/defaultprofile.svg";
     }
 
+    public void checkDuplicate(String nickname) {
+        if (userRepository.existsByNickname(nickname)) {
+            throw new DuplicateException(ErrorCode.DUPLICATE_NICKNAME_EXCEPTION);
+        }
+    }
+
+    @Transactional
+    public void updateUser(Long userId, UpdateUserRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
+
+        // 이름
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+
+        // 닉네임
+        if (request.getNickname() != null) {
+            checkDuplicate(request.getNickname());
+            user.setNickname(request.getNickname());
+        }
+
+        // 주소
+        if (request.getAddr() != null) {
+            user.setAddr(request.getAddr());
+        }
+
+        // 상세 주소
+        if (request.getDetailAddr() != null) {
+            user.setDetail_addr(request.getDetailAddr());
+        }
+
+        // 전화번호
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+
+        // 프로필
+        if (request.getProfile() != null) {
+            // TODO-HONG : 기존 프로필 이미지 제거 (상의 후 결정)
+            String profileImageUrl = handleProfileImage(request.getProfile());
+            user.setProfile(profileImageUrl);
+        }
+    }
 }

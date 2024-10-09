@@ -48,6 +48,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/oauth2/authorization/google"),
             new AntPathRequestMatcher("/api/post/public/**"),
             new AntPathRequestMatcher("/api/post/**", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/api/user/duplicate", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/api/ws/**")
     };
 
