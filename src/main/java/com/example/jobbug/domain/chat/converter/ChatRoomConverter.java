@@ -2,6 +2,7 @@ package com.example.jobbug.domain.chat.converter;
 
 import com.example.jobbug.domain.chat.dto.response.GetChatRoomListResponse;
 import com.example.jobbug.domain.chat.dto.response.GetChatRoomResponse;
+import com.example.jobbug.domain.chat.dto.response.MessageResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.Message;
 import com.example.jobbug.domain.chat.enums.ChatRoomUserRole;
@@ -21,7 +22,7 @@ public class ChatRoomConverter {
         return new GetChatRoomListResponse(chatRoom.getId(), MessageConverter.mapToResponse(lastMessage));
     }
 
-    public static GetChatRoomResponse mapToResponse(ChatRoom chatRoom, ChatRoomUserRole role) {
+    public static GetChatRoomResponse mapToResponse(ChatRoom chatRoom, ChatRoomUserRole role, List<MessageResponse> messages) {
         Long reservationId = null;
         Long reviewId = null;
 
@@ -40,14 +41,7 @@ public class ChatRoomConverter {
                 .role(role)
                 .reservationId(reservationId)
                 .reviewId(reviewId)
-                .messages(
-                        chatRoom.getMessages()
-                                .stream()
-                                .sorted(Comparator.comparing(BaseEntity::getCreatedAt))
-                                .limit(30)
-                                .map(MessageConverter::mapToResponse)
-                                .toList() // TODO-HONG : JPA로 최적화
-                )
+                .messages(messages)
                 .build();
     }
 }

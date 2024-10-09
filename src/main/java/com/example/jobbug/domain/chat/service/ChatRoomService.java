@@ -4,6 +4,7 @@ import com.example.jobbug.domain.chat.converter.ChatRoomConverter;
 import com.example.jobbug.domain.chat.dto.request.CreateRoomRequest;
 import com.example.jobbug.domain.chat.dto.response.GetChatRoomListResponse;
 import com.example.jobbug.domain.chat.dto.response.GetChatRoomResponse;
+import com.example.jobbug.domain.chat.dto.response.MessageResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.enums.ChatRoomUserRole;
 import com.example.jobbug.domain.chat.repository.ChatRoomQueryRepository;
@@ -29,6 +30,7 @@ import java.util.List;
 public class ChatRoomService {
     private final ChatRoomQueryRepository chatRoomQueryRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final MessageService messageService;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
@@ -53,7 +55,8 @@ public class ChatRoomService {
 
         ChatRoomUserRole role = chatRoom.getAuthor().getId().equals(userId) ? ChatRoomUserRole.AUTHOR : ChatRoomUserRole.PARTICIPANT;
 
-        return ChatRoomConverter.mapToResponse(chatRoom, role);
+        List<MessageResponse> messages = messageService.loadMessages(roomId);
+        return ChatRoomConverter.mapToResponse(chatRoom, role, messages);
     }
 
     // 수락자가 채팅방 생성 요청
