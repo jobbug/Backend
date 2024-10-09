@@ -56,11 +56,16 @@ public class UserController {
         }
     }
 
-    @GetMapping("/test")
-    public String test(
-            @UserId Long userId
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserProfile(
+            @PathVariable Long userId
     ) {
-        return "test " + userId;
+        try {
+            return SuccessResponse.success(GET_USER_PROFILE_SUCCESS, userService.getUserProfile(userId));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
     }
+
 }
 
