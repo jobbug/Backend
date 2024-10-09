@@ -2,8 +2,10 @@ package com.example.jobbug.domain.chat.service;
 
 import com.example.jobbug.domain.chat.converter.ChatRoomConverter;
 import com.example.jobbug.domain.chat.dto.request.CreateRoomRequest;
-import com.example.jobbug.domain.chat.dto.response.ChatRoomResponse;
+import com.example.jobbug.domain.chat.dto.response.GetChatRoomListResponse;
+import com.example.jobbug.domain.chat.dto.response.GetChatRoomResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
+import com.example.jobbug.domain.chat.enums.ChatRoomUserRole;
 import com.example.jobbug.domain.chat.repository.ChatRoomQueryRepository;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.post.entity.Post;
@@ -14,6 +16,7 @@ import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.BadRequestException;
 import com.example.jobbug.global.exception.model.DuplicateException;
+import com.example.jobbug.global.exception.model.ForbiddenException;
 import com.example.jobbug.global.exception.model.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,16 +33,32 @@ public class ChatRoomService {
     private final PostRepository postRepository;
 
     @Transactional
-    public List<ChatRoomResponse> findAllByUserId(Long userId) {
+    public List<GetChatRoomListResponse> loadAll(Long userId) {
         return chatRoomQueryRepository.findAllByUserIdInAuthorIdOrParticipantId(userId)
                 .stream()
-                .map(ChatRoomConverter::mapToResponse)
+                .map(ChatRoomConverter::mapToListResponse)
                 .toList();
+    }
+
+    @Transactional
+    public GetChatRoomResponse load(Long userId, Long roomId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
+                () -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION)
+        );
+
+        if(!chatRoom.getAuthor().getId().equals(userId) && !chatRoom.getParticipant().getId().equals(userId)) {
+            throw new ForbiddenException(ErrorCode.NOT_PARTICIPANT_EXCEPTION);
+        }
+
+        ChatRoomUserRole role = chatRoom.getAuthor().getId().equals(userId) ? ChatRoomUserRole.AUTHOR : ChatRoomUserRole.PARTICIPANT;
+
+        return ChatRoomConverter.mapToResponse(chatRoom, role);
     }
 
     // 수락자가 채팅방 생성 요청
     @Transactional
-    public ChatRoomResponse createRoom(CreateRoomRequest request, Long userId) {
+    public GetChatRoomListResponse createRoom(CreateRoomRequest request, Long userId) {
 
         if(chatRoomQueryRepository.existsByUserIdInAuthorIdOrParticipantIdAndPostId(userId, request.getPostId())) {
             throw new DuplicateException(ErrorCode.ALREADY_ROOM_EXIST);
@@ -64,6 +83,8 @@ public class ChatRoomService {
                 .status(ChatRoomStatus.DO)
                 .build());
 
-        return ChatRoomConverter.mapToResponse(chatRoom);
+        return ChatRoomConverter.mapToListResponse(chatRoom);
     }
+
+
 }

@@ -2,6 +2,7 @@ package com.example.jobbug.domain.chat.entity;
 
 import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
+import com.example.jobbug.domain.review.entity.Review;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -42,6 +43,9 @@ public class ChatRoom extends BaseEntity {
 
     @OneToOne(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Reservation reservation;
+
+    @OneToOne(mappedBy = "roomId", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Review review;
 
     @Builder
     public ChatRoom(User author, User participant, Long postId, ChatRoomStatus status) {
