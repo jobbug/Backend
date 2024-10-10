@@ -1,8 +1,8 @@
 package com.example.jobbug.domain.post.entity;
 
+import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.post.enums.PostStatus;
-import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +74,9 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatRoom> chatRooms;
 
     @Builder
     public Post(User author, String title, String content, String bugType, String bugName, String originImage, String editedImage, PostStatus status, String addr, String detailAddr, double latitude, double longitude, String startTime, String endTime, String reward) {

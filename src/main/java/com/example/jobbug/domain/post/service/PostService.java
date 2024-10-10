@@ -1,5 +1,8 @@
 package com.example.jobbug.domain.post.service;
 
+import com.example.jobbug.domain.badge.entity.Badge;
+import com.example.jobbug.domain.badge.enums.BadgeType;
+import com.example.jobbug.domain.badge.repository.BadgeRepository;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.post.converter.PostConverter;
@@ -8,6 +11,7 @@ import com.example.jobbug.domain.post.dto.request.UpdatePostRequest;
 import com.example.jobbug.domain.post.dto.response.*;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.post.enums.PostStatus;
+import com.example.jobbug.domain.post.repository.PostQueryRepository;
 import com.example.jobbug.domain.post.repository.PostRepository;
 import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.review.repository.ReviewRepository;
@@ -27,7 +31,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +54,7 @@ import static com.example.jobbug.global.exception.enums.ErrorCode.*;
 public class PostService {
 
     private final ReviewRepository reviewRepository;
+    private final BadgeRepository badgeRepository;
     @Value("${kakao.rest-api-key}")
     private String kakaoApiKey;
 
@@ -59,6 +63,7 @@ public class PostService {
     private static final double defaultLongitude = 126.9723;
 
     private final PostRepository postRepository;
+    private final PostQueryRepository postQueryRepository;
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final AIService aiService;
@@ -117,6 +122,28 @@ public class PostService {
         Map<String, Double> coordinates = fetchCoordinates(request.getAddress());
         Post post = Post.of(author, request, coordinates.get("latitude"), coordinates.get("longitude"));
         postRepository.save(post);
+
+        // 현재까지 post 작성 수 세기
+        int postCount = postRepository.countByAuthor(author);
+        if(postCount == 10) {
+            Badge badge = Badge.builder()
+                    .user(author)
+                    .name(BadgeType.SOS.getName())
+                    .type(BadgeType.SOS)
+                    .build();
+            badgeRepository.save(badge);
+        }
+
+        // 현재 요청한 벌레타입의 post 작성 수가 10개인지 확인
+        int bugTypeCount = postRepository.countByAuthorAndBugType(author, request.getBug_type());
+        if(bugTypeCount == 10) {
+            Badge badge = Badge.builder()
+                    .user(author)
+                    .name(String.format(request.getBug_type() + " " + BadgeType.DISLIKE.getName()))
+                    .type(BadgeType.DISLIKE)
+                    .build();
+            badgeRepository.save(badge);
+        }
         return SavePostResponse.builder().postId(post.getId()).build();
     }
 
@@ -170,6 +197,18 @@ public class PostService {
             throw new BadRequestException(CANCEL_POST_EXCEPTION);
         }
         post.cancel();
+
+        // 취소 후 현재까지 작성한 post의 개수가 10개 미만이 되면 SOS 뱃지 삭제
+        int postCount = postRepository.countByAuthor(user);
+        if(postCount < 10) {
+            badgeRepository.deleteByUserAndType(user, BadgeType.SOS);
+        }
+
+        // 취소 후 현재까지 작성한 bug_type의 post의 개수가 10개 미만이 되면 DISLIKE 뱃지 삭제
+        int bugTypeCount = postRepository.countByAuthorAndBugType(user, post.getBugType());
+        if(bugTypeCount < 10) {
+            badgeRepository.deleteByUserAndName(user, post.getBugType() + " " + BadgeType.DISLIKE.getName());
+        }
     }
 
     @Transactional
@@ -197,12 +236,39 @@ public class PostService {
     }
 
     @Transactional
+    public MainPostInfoResponse getUserRequestsByStatusAndPaging(
+            Long userId,
+            int page,
+            int count
+    ) {
+        User author = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        Page<Post> pageResult = postQueryRepository.findAllByAuthorAndStatusOrderByCreatedAtDesc(userId, PostStatus.DO, PageRequest.of(page, count));
+
+        return PostConverter.toMainPostInfoResponse(pageResult.getContent(), pageResult.getPageable(), (int) pageResult.getTotalElements());
+    }
+
+    @Transactional
     public GetUserAcceptancesResponse getUserAcceptances(Long userId) {
         User participant = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
         );
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByParticipantIdAndStatusOrderByUpdatedAtDesc(participant.getId(), ChatRoomStatus.MATCHED);
         return PostConverter.toGetUserAcceptancesResponse(chatRooms, participant, reviewRepository, postRepository);
+    }
+
+    @Transactional
+    public MainPostInfoResponse getUserAcceptancesByPaging(
+            Long userId,
+            int page,
+            int count
+    ) {
+        User participant = userRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
+        );
+        Page<Post> pageResult = postQueryRepository.findAllByChatRoomParticipantAcceptance(userId, PageRequest.of(page, count));
+        return PostConverter.toMainPostInfoResponse(pageResult.getContent(), pageResult.getPageable(), (int) pageResult.getTotalElements());
     }
 
     // Haversine 공식 기반 거리 계산 (단위: km)

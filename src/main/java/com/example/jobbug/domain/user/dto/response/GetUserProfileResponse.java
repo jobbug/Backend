@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.user.dto.response;
 
+import com.example.jobbug.domain.badge.enums.BadgeType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,6 +20,6 @@ public class GetUserProfileResponse {
     @Builder
     public static class Badge {
         private String name;
-        private String type;
+        private BadgeType type;
     }
 }

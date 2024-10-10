@@ -1,6 +1,6 @@
 package com.example.jobbug.domain.auth.dto;
+
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 
 import java.util.Map;
 

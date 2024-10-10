@@ -65,12 +65,12 @@ public class Review extends BaseEntity {
         this.post = post;
     }
 
-    public static Review of(User writer, ChatRoom chatRoom, Post post, SaveReviewRequest request){
+    public static Review of(User writer, ChatRoom chatRoom,SaveReviewRequest request){
         return Review.builder()
                 .writer(writer)
                 .author(chatRoom.getParticipant())
                 .roomId(chatRoom)
-                .post(post)
+                .post(chatRoom.getPost())
                 .lateTime(request.getLateTime())
                 .content(request.getContent())
                 .point(request.getPoint())

@@ -1,5 +1,8 @@
 package com.example.jobbug.domain.review.service;
 
+import com.example.jobbug.domain.badge.entity.Badge;
+import com.example.jobbug.domain.badge.enums.BadgeType;
+import com.example.jobbug.domain.badge.repository.BadgeRepository;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.post.entity.Post;
@@ -19,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class ReviewService {
     private final ChatRoomRepository chatRoomRepository;
     private final ReviewRepository reviewRepository;
     private final PostRepository postRepository;
+    private final BadgeRepository badgeRepository;
 
     @Transactional
     public void saveReview(Long userId, SaveReviewRequest request) {
@@ -34,17 +40,45 @@ public class ReviewService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
         ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION));
-        Post post = postRepository.findById(chatRoom.getPostId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST_EXCEPTION));
 
         if (!chatRoom.getAuthor().equals(user)) {
             throw new BadRequestException(ErrorCode.NOT_CHATROOM_WRITER);
         }
 
-        Review review = Review.of(user, chatRoom, post, request);
+        Review review = Review.of(user, chatRoom, request);
         reviewRepository.save(review);
+
+        Post post = chatRoom.getPost();
+
         post.finish();
         postRepository.save(post);
+
+        if (reviewRepository.countByAuthor(user) == 10) {
+            Badge badge = Badge.builder()
+                    .user(user)
+                    .name(BadgeType.EXPERT.getName())
+                    .type(BadgeType.EXPERT)
+                    .build();
+            badgeRepository.save(badge);
+        }
+
+        List<Review> reviewList = reviewRepository.findByAuthor(chatRoom.getParticipant());
+        String currentBugType = post.getBugType();
+        int count = 0;
+        for(Review r : reviewList) {
+            Post p = r.getPost();
+            if(p.getBugType().equals(currentBugType)) {
+                count++;
+            }
+        }
+        if (count == 10) {
+            Badge badge = Badge.builder()
+                    .user(chatRoom.getParticipant())
+                    .name(String.format(currentBugType + " " + BadgeType.KILLER.getName()))
+                    .type(BadgeType.KILLER)
+                    .build();
+            badgeRepository.save(badge);
+        }
     }
 
     public ReviewDetailInfoResponse getReview(Long userId, Long reviewId) {

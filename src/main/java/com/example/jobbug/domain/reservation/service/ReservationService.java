@@ -44,10 +44,6 @@ public class ReservationService {
                 () -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION)
         );
 
-        Post post = postRepository.findById(chatRoom.getPostId()).orElseThrow(
-                () -> new NotFoundException(ErrorCode.NOT_FOUND_POST_EXCEPTION)
-        );
-
         if (!chatRoom.getAuthor().getId().equals(userId)) {
             throw new JobbugException(ErrorCode.RESERVATION_CREATION_NOT_ALLOWED_EXCEPTION);
         }
@@ -57,7 +53,7 @@ public class ReservationService {
         }
 
         Reservation reservation = reservationRepository.save(
-                request.toEntity(chatRoom, post)
+                request.toEntity(chatRoom)
         );
 
         long number = messageIdGenerator.nextId();

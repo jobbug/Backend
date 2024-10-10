@@ -106,8 +106,8 @@ public class PostConverter {
     public static GetUserAcceptancesResponse toGetUserAcceptancesResponse(List<ChatRoom> chatRooms, User participant, ReviewRepository reviewRepository, PostRepository postRepository) {
         return GetUserAcceptancesResponse.builder()
                 .acceptances(chatRooms.stream().map(chatRoom -> {
-                    Post post = postRepository.findById(chatRoom.getPostId()).orElse(null);
-                    Review review = reviewRepository.findByPostId(chatRoom.getPostId());
+                    Post post = chatRoom.getPost();
+                    Review review = chatRoom.getReview();
                     GetUserAcceptancesResponse.GetUserAcceptanceResponse.ReviewResponse reviewResponse = null;
                     if (review != null) {
                         reviewResponse = GetUserAcceptancesResponse.GetUserAcceptanceResponse.ReviewResponse.builder()

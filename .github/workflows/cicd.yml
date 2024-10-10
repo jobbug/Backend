@@ -23,7 +23,12 @@ jobs:
       run: | 
         touch ./src/main/resources/application-secret.yml
         echo "${{ secrets.APPLICATION_SECRET }}" > ./src/main/resources/application-secret.yml
-        
+
+    - name: Create firebase AdminSDK Key
+      run: |
+        touch ./src/main/resources/serviceAccountKey.json
+        echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}" > ./src/main/resources/serviceAccountKey.json
+
     - name: 빌드
       run: |
           chmod +x gradlew
