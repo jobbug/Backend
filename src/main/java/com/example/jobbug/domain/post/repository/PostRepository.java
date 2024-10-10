@@ -28,4 +28,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByIdAndAuthor(Long postId, User author);
 
     List<Post> findAllByAuthorOrderByCreatedAtDesc(User author);
+
+    int countByAuthor(User author);
+
+    int countByAuthorAndBugType(User author, String bugType);
 }

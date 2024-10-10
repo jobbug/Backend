@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.badge.entity;
 
+import com.example.jobbug.domain.badge.enums.BadgeType;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -25,11 +26,12 @@ public class Badge extends BaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private String type;
+    private BadgeType type;
 
     @Builder
-    public Badge(User user, String name, String type) {
+    public Badge(User user, String name, BadgeType type) {
         this.user = user;
         this.name = name;
         this.type = type;

@@ -15,12 +15,10 @@ import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.ForbiddenException;
 import com.example.jobbug.global.exception.model.NotFoundException;
-import com.google.api.core.ApiFuture;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 

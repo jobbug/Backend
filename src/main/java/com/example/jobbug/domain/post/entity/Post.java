@@ -2,7 +2,6 @@ package com.example.jobbug.domain.post.entity;
 
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.post.enums.PostStatus;
-import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
@@ -11,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -13,5 +13,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> findByRoomId(ChatRoom chatRoom);
     List<Review> findByAuthor(User user);
     Review findByPostId(Long postId);
+
+    int countByAuthor(User user);
 }
 

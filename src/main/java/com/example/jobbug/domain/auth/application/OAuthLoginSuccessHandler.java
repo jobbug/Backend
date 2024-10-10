@@ -4,7 +4,6 @@ import com.example.jobbug.domain.auth.dto.GoogleUserInfo;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.jwt.JwtUtil;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
