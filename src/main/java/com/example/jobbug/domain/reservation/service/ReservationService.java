@@ -1,7 +1,12 @@
 package com.example.jobbug.domain.reservation.service;
 
 import com.example.jobbug.domain.chat.entity.ChatRoom;
+import com.example.jobbug.domain.chat.entity.Message;
+import com.example.jobbug.domain.chat.enums.MessageType;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
+import com.example.jobbug.domain.chat.util.MessageIdGenerator;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessageData;
+import com.example.jobbug.domain.firebase.service.FirebaseService;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.post.repository.PostRepository;
 import com.example.jobbug.domain.reservation.dto.request.ReservationRequest;
@@ -28,6 +33,10 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final PostRepository postRepository;
 
+    private final FirebaseService firebaseService;
+
+    private final MessageIdGenerator messageIdGenerator;
+
     @Transactional
     public CreateReservationResponse createReservation(Long userId, ReservationRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId()).orElseThrow(
@@ -48,6 +57,21 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.save(
                 request.toEntity(chatRoom, post)
+        );
+
+        long number = messageIdGenerator.nextId();
+
+        Message message = Message.builder()
+                .number(number)
+                .chatRoom(chatRoom)
+                .content("새로운 예약 요청")
+                .sender(null)
+                .isRead(false)
+                .type(MessageType.RESERVATION)
+                .build();
+
+        firebaseService.sendFirebaseMessage(
+                message, new FirebaseMessageData(reservation.getId())
         );
 
         return CreateReservationResponse.fromEntity(

@@ -1,6 +1,6 @@
 package com.example.jobbug.global.config.web;
 
-import com.example.jobbug.domain.chat.entity.firebase.FirebaseMessage;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessage;
 import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.exception.model.UserNotAuthenticatedException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -2,8 +2,9 @@ package com.example.jobbug.domain.chat.converter;
 
 import com.example.jobbug.domain.chat.dto.response.MessageResponse;
 import com.example.jobbug.domain.chat.entity.Message;
-import com.example.jobbug.domain.chat.entity.firebase.FirebaseMessage;
-import com.example.jobbug.domain.chat.entity.firebase.MessageType;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessage;
+import com.example.jobbug.domain.chat.enums.MessageType;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessageData;
 import com.example.jobbug.domain.user.entity.User;
 
 import java.time.LocalDateTime;
@@ -23,15 +24,33 @@ public class MessageConverter {
         );
     }
 
-    public static FirebaseMessage mapToFirebase(User user, Message message, Long roomId, MessageType type) {
+    public static FirebaseMessage mapToFirebase(Message message, FirebaseMessageData data) {
+        User sender = message.getSender();
+
         return new FirebaseMessage(
                 message.getNumber(),
-                type,
-                user.getId(),
-                roomId,
-                user.getName(),
+                message.getType(),
+                getSenderId(sender),
+                message.getChatRoom().getId(),
+                getSenderNickName(sender),
                 message.getContent(),
-                LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli() // TODO-HONG : 추후 시간 일치 필요
+                message.isRead(),
+                LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(),
+                data
         );
+    }
+
+    private static Long getSenderId(User sender) {
+        if(sender == null) {
+            return null;
+        }
+        return sender.getId();
+    }
+
+    private static String getSenderNickName(User sender) {
+        if(sender == null) {
+            return null;
+        }
+        return sender.getNickname();
     }
 }

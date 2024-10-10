@@ -1,4 +1,4 @@
-package com.example.jobbug.domain.chat.entity.firebase;
+package com.example.jobbug.domain.chat.enums;
 
 public enum MessageType {
     MESSAGE,

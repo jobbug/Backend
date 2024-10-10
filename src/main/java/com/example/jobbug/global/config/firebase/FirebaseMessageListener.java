@@ -2,7 +2,7 @@ package com.example.jobbug.global.config.firebase;
 
 
 import com.example.jobbug.domain.chat.entity.ChatRoom;
-import com.example.jobbug.domain.chat.entity.firebase.FirebaseMessage;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessage;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.global.config.web.MessageWebSocketHandler;
 import com.example.jobbug.global.exception.enums.ErrorCode;
@@ -22,7 +22,6 @@ public class FirebaseMessageListener {
 
     private final MessageWebSocketHandler messageWebSocketHandler;
     private final ChatRoomRepository chatRoomRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public void init() {
         DatabaseReference messageRef = FirebaseDatabase.getInstance()

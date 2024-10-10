@@ -1,6 +1,7 @@
 package com.example.jobbug.domain.chat.entity;
 
-import com.example.jobbug.domain.chat.entity.firebase.MessageType;
+import com.example.jobbug.domain.chat.enums.MessageType;
+import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.global.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -32,18 +33,19 @@ public class Message extends BaseEntity {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "sender_id", nullable = true)
-    private Long senderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = true)
+    private User sender;
 
     @Column(name = "isRead", nullable = false)
     private boolean isRead;
 
     @Builder
-    public Message(Long number, ChatRoom chatRoom, String content, Long senderId, boolean isRead, MessageType type) {
+    public Message(Long number, ChatRoom chatRoom, String content, User sender, boolean isRead, MessageType type) {
         this.number = number;
         this.chatRoom = chatRoom;
         this.content = content;
-        this.senderId = senderId;
+        this.sender = sender;
         this.isRead = isRead;
         this.type = type;
     }

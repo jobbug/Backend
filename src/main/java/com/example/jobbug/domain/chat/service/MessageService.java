@@ -5,11 +5,12 @@ import com.example.jobbug.domain.chat.dto.request.CreateChatRequest;
 import com.example.jobbug.domain.chat.dto.response.MessageResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.Message;
-import com.example.jobbug.domain.chat.entity.firebase.MessageType;
+import com.example.jobbug.domain.chat.enums.MessageType;
 import com.example.jobbug.domain.chat.exception.FirebaseException;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.chat.repository.MessageRepository;
 import com.example.jobbug.domain.chat.util.MessageIdGenerator;
+import com.example.jobbug.domain.firebase.service.FirebaseService;
 import com.example.jobbug.domain.user.entity.User;
 import com.example.jobbug.domain.user.repository.UserRepository;
 import com.example.jobbug.global.exception.enums.ErrorCode;
@@ -31,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 @RequiredArgsConstructor
 public class MessageService {
 
+    private final FirebaseService firebaseService;
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
@@ -63,23 +65,12 @@ public class MessageService {
                 .number(number)
                 .chatRoom(chatRoom)
                 .content(request.getContent())
-                .senderId(userId)
+                .sender(user)
                 .isRead(false)
                 .type(MessageType.MESSAGE)
                 .build();
-
-        DatabaseReference roomMessageRef = FirebaseDatabase.getInstance()
-                .getReference("messages");
-
+        firebaseService.sendFirebaseMessage(message, null);
         messageRepository.save(message);
-
-        try {
-            roomMessageRef.push().setValueAsync(
-                    MessageConverter.mapToFirebase(user, message, chatRoom.getId(), MessageType.MESSAGE)
-            ).get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new FirebaseException(ErrorCode.FAILED_TO_SEND_MESSAGE);
-        }
     }
 
     public List<MessageResponse> loadMessages(Long roomId) {
