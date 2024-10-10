@@ -41,6 +41,8 @@ public class UserService {
     private final S3Service s3Service;
     private final ReviewRepository reviewRepository;
 
+    private static final String DEFAULT_PROFILE_IMAGE_URL = "https://jobbug-bucket.s3.ap-northeast-2.amazonaws.com/defaultprofile.svg";
+
     // 회원가입
     @Transactional
     public UserRegisterResponse registerUser(String registerToken, MultipartFile profileImage, UserRegisterRequest request) {
@@ -116,7 +118,7 @@ public class UserService {
             }
         }
         // 기본 프로필 이미지 설정
-        return "https://jobbug-bucket.s3.ap-northeast-2.amazonaws.com/defaultprofile.svg";
+        return DEFAULT_PROFILE_IMAGE_URL;
     }
 
     public void checkDuplicate(String nickname) {
@@ -158,9 +160,17 @@ public class UserService {
 
         // 프로필
         if (request.getProfile() != null) {
-            // TODO-HONG : 기존 프로필 이미지 제거 (상의 후 결정)
+            deleteOriginalProfileImage(user.getProfile());
             String profileImageUrl = handleProfileImage(request.getProfile());
             user.setProfile(profileImageUrl);
         }
+    }
+
+    private void deleteOriginalProfileImage(String imageUrl) {
+        if(imageUrl.equals(DEFAULT_PROFILE_IMAGE_URL)) {
+            return;
+        }
+        String fileName = imageUrl.substring(imageUrl.indexOf("profile/"));
+        s3Service.deleteFile(fileName);
     }
 }
