@@ -2,6 +2,7 @@ package com.example.jobbug.domain.post.controller;
 
 import com.example.jobbug.domain.post.dto.request.SavePostRequest;
 import com.example.jobbug.domain.post.dto.request.UpdatePostRequest;
+import com.example.jobbug.domain.post.enums.PostStatus;
 import com.example.jobbug.domain.post.service.PostService;
 import com.example.jobbug.global.config.web.UserId;
 import com.example.jobbug.global.dto.ErrorResponse;
@@ -146,6 +147,33 @@ public class PostController {
     ) {
         try {
             return SuccessResponse.success(SuccessCode.GET_USER_ACCEPTANCES_SUCCESS, postService.getUserAcceptances(userId));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+
+    @GetMapping("/request")
+    public ResponseEntity<?> getLoginUserRequests(
+            @UserId Long userId,
+            @RequestParam int page,
+            @RequestParam int count
+    ) {
+        try {
+            return SuccessResponse.success(GET_USER_REQUESTS_SUCCESS, postService.getUserRequestsByStatusAndPaging(userId, page, count));
+        } catch (NotFoundException e) {
+            return ErrorResponse.error(e.getErrorCode());
+        }
+    }
+
+    @GetMapping("/acceptance")
+    public ResponseEntity<?> getLoginUserAcceptances(
+            @UserId Long userId,
+            @RequestParam int page,
+            @RequestParam int count
+    ) {
+        try {
+            return SuccessResponse.success(SuccessCode.GET_USER_ACCEPTANCES_SUCCESS, postService.getUserAcceptancesByPaging(userId, page, count));
         } catch (NotFoundException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
