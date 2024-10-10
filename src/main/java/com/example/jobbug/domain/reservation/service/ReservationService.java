@@ -106,13 +106,28 @@ public class ReservationService {
                 () -> new NotFoundException(ErrorCode.NOT_FOUND_RESERVATION_EXCEPTION)
         );
 
-        ChatRoom room = reservation.getChatRoom();
+        ChatRoom chatRoom = reservation.getChatRoom();
 
-        if (!room.getParticipant().getId().equals(userId)) {
+        if (!chatRoom.getParticipant().getId().equals(userId)) {
             throw new JobbugException(ErrorCode.RESERVATION_ACCEPT_NOT_ALLOWED_EXCEPTION);
         }
 
-        room.matchReservation();
+        chatRoom.matchReservation();
+
+        long number = messageIdGenerator.nextId();
+
+        Message message = Message.builder()
+                .number(number)
+                .chatRoom(chatRoom)
+                .content("매칭 성공")
+                .sender(null)
+                .isRead(false)
+                .type(MessageType.MATCHED)
+                .build();
+
+        firebaseService.sendFirebaseMessage(
+                message, new FirebaseMessageData(reservation.getId())
+        );
 
         return true;
     }
