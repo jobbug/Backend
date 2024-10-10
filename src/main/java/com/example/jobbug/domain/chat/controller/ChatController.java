@@ -4,13 +4,13 @@ import com.example.jobbug.domain.chat.dto.request.CreateChatRequest;
 import com.example.jobbug.domain.chat.service.MessageService;
 import com.example.jobbug.global.config.web.UserId;
 import com.example.jobbug.global.dto.SuccessNonDataResponse;
-import com.example.jobbug.global.dto.SuccessResponse;
 import com.example.jobbug.global.exception.enums.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
