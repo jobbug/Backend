@@ -12,6 +12,7 @@ import com.example.jobbug.domain.post.repository.PostRepository;
 import com.example.jobbug.domain.reservation.dto.request.ReservationRequest;
 import com.example.jobbug.domain.reservation.dto.response.CreateReservationResponse;
 import com.example.jobbug.domain.reservation.dto.response.GetReservationResponse;
+import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.reservation.repository.ReservationRepository;
 import com.example.jobbug.domain.user.entity.User;
@@ -71,7 +72,9 @@ public class ReservationService {
                 .build();
 
         firebaseService.sendFirebaseMessage(
-                message, new FirebaseMessageData(reservation.getId())
+                message, FirebaseMessageData.builder()
+                        .reservationId(reservation.getId())
+                        .build()
         );
 
         return CreateReservationResponse.fromEntity(
@@ -96,7 +99,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean acceptReservation(Long userId, Long reservationId) {
+    public void acceptReservation(Long userId, Long reservationId) {
 
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION)
@@ -110,6 +113,10 @@ public class ReservationService {
 
         if (!chatRoom.getParticipant().getId().equals(userId)) {
             throw new JobbugException(ErrorCode.RESERVATION_ACCEPT_NOT_ALLOWED_EXCEPTION);
+        }
+
+        if(chatRoom.getStatus() == ChatRoomStatus.MATCHED) {
+            throw new JobbugException(ErrorCode.RESERVATION_ALREADY_MATCHED_EXCEPTION);
         }
 
         chatRoom.matchReservation();
@@ -126,9 +133,10 @@ public class ReservationService {
                 .build();
 
         firebaseService.sendFirebaseMessage(
-                message, new FirebaseMessageData(reservation.getId())
+                message, FirebaseMessageData.builder()
+                        .reservationId(reservation.getId())
+                        .phone(chatRoom.getAuthor().getPhone())
+                        .build()
         );
-
-        return true;
     }
 }

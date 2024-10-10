@@ -30,13 +30,16 @@ public class FirebaseMessageListener {
         messageRef.addChildEventListener(new OnChildAddedListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+                log.info("Message received: {}", dataSnapshot);
                 FirebaseMessage message = dataSnapshot.getValue(FirebaseMessage.class);
+                log.info("Message: {}", message);
                 ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId()).orElseThrow(
                         () -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION)
                 );
 
                 messageWebSocketHandler.sendMessage(chatRoom.getAuthor().getId(), message);
                 messageWebSocketHandler.sendMessage(chatRoom.getParticipant().getId(), message);
+
             }
         });
     }

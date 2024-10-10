@@ -22,7 +22,7 @@ public enum ErrorCode {
     FAILED_TO_SEND_MESSAGE(HttpStatus.BAD_REQUEST, "E042", "메시지 전송 실패"),
     CANCEL_POST_EXCEPTION(HttpStatus.BAD_REQUEST, "E065", "해당 게시글 상태는 진행중이 아닙니다."),
     UPDATE_POST_EXCEPTION(HttpStatus.BAD_REQUEST, "E066", "해당 게시글 상태는 매칭전/진행중이 아닙니다."),
-
+    RESERVATION_ALREADY_MATCHED_EXCEPTION(HttpStatus.BAD_REQUEST, "E055", "이미 매칭된 예약입니다."),
 
     // 401
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "E401", "인증 정보가 유효하지 않습니다."),
