@@ -7,8 +7,6 @@ import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
 import com.example.jobbug.domain.chat.util.MessageIdGenerator;
 import com.example.jobbug.domain.firebase.entity.FirebaseMessageData;
 import com.example.jobbug.domain.firebase.service.FirebaseService;
-import com.example.jobbug.domain.post.entity.Post;
-import com.example.jobbug.domain.post.repository.PostRepository;
 import com.example.jobbug.domain.reservation.dto.request.ReservationRequest;
 import com.example.jobbug.domain.reservation.dto.response.CreateReservationResponse;
 import com.example.jobbug.domain.reservation.dto.response.GetReservationResponse;
@@ -32,9 +30,9 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ReservationRepository reservationRepository;
-    private final PostRepository postRepository;
 
     private final FirebaseService firebaseService;
+    private final SchedulerService schedulerService;
 
     private final MessageIdGenerator messageIdGenerator;
 
@@ -56,6 +54,7 @@ public class ReservationService {
                 request.toEntity(chatRoom)
         );
 
+        // 예약 이벤트
         long number = messageIdGenerator.nextId();
 
         Message message = Message.builder()
@@ -70,6 +69,18 @@ public class ReservationService {
         firebaseService.sendFirebaseMessage(
                 message, FirebaseMessageData.builder()
                         .reservationId(reservation.getId())
+                        .build()
+        );
+
+        // 후기 알림 이벤트
+        schedulerService.scheduleMessage(
+                reservation.getEndTime(),
+                Message.builder()
+                        .chatRoom(chatRoom)
+                        .content("후기 작성 알림")
+                        .sender(null)
+                        .isRead(false)
+                        .type(MessageType.REVIEW)
                         .build()
         );
 
