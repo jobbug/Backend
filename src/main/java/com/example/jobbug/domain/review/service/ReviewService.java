@@ -40,15 +40,16 @@ public class ReviewService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION));
         ChatRoom chatRoom = chatRoomRepository.findById(request.getChatRoomId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM_EXCEPTION));
-        Post post = postRepository.findById(chatRoom.getPostId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_POST_EXCEPTION));
 
         if (!chatRoom.getAuthor().equals(user)) {
             throw new BadRequestException(ErrorCode.NOT_CHATROOM_WRITER);
         }
 
-        Review review = Review.of(user, chatRoom, post, request);
+        Review review = Review.of(user, chatRoom, request);
         reviewRepository.save(review);
+
+        Post post = chatRoom.getPost();
+
         post.finish();
         postRepository.save(post);
 

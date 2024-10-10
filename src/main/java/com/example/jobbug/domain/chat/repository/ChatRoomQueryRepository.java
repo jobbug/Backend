@@ -30,7 +30,7 @@ public class ChatRoomQueryRepository {
                 .where(
                         chatRoom.author.id.eq(userId)
                                 .or(chatRoom.participant.id.eq(userId)),
-                        chatRoom.postId.eq(postId)
+                        chatRoom.post.id.eq(postId)
                 )
                 .fetch().stream().findAny().isPresent();
     }

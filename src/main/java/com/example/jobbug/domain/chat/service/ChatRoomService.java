@@ -82,7 +82,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.builder()
                 .author(post.getAuthor())
                 .participant(participant)
-                .postId(request.getPostId())
+                .post(post)
                 .status(ChatRoomStatus.DO)
                 .build());
 

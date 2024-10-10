@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.chat.entity;
 
+import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.review.entity.Review;
@@ -32,8 +33,9 @@ public class ChatRoom extends BaseEntity {
     @JoinColumn(name = "participant_id", nullable = false)
     private User participant;
 
-    @Column(name = "post_id", nullable = false)
-    private Long postId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -49,10 +51,10 @@ public class ChatRoom extends BaseEntity {
     private Review review;
 
     @Builder
-    public ChatRoom(User author, User participant, Long postId, ChatRoomStatus status) {
+    public ChatRoom(User author, User participant, Post post, ChatRoomStatus status) {
         this.author = author;
         this.participant = participant;
-        this.postId = postId;
+        this.post = post;
         this.status = status;
     }
 

@@ -20,11 +20,11 @@ public class ReservationRequest {
     private String startTime;
     private String endTime;
 
-    public Reservation toEntity(ChatRoom chatRoom, Post post) {
+    public Reservation toEntity(ChatRoom chatRoom) {
         return Reservation.builder()
                 .id(null)
                 .chatRoom(chatRoom)
-                .post(post)
+                .post(chatRoom.getPost())
                 .address(address)
                 .addressDetail(addressDetail)
                 .startTime(LocalDateTime.of(LocalDate.now(), LocalTime.parse(startTime)))

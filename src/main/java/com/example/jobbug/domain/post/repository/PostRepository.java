@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>{
 
     // 특정 bug_type과 좌표 기준으로 게시글 찾기
     Page<Post> findByBugTypeAndLatitudeBetweenAndLongitudeBetween(
