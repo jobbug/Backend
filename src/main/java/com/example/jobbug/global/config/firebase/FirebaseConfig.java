@@ -7,9 +7,11 @@ import com.google.firebase.FirebaseOptions;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @RequiredArgsConstructor
 @Configuration
@@ -21,10 +23,11 @@ public class FirebaseConfig {
     // 스프링 빈 초기화 이후 수행
     @PostConstruct
     public void initFirebase() {
-        try {
-            FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");
-            FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+        ClassPathResource serviceAccount = new ClassPathResource("serviceAccountKey.json");
+
+        try (InputStream serviceAccountStream = serviceAccount.getInputStream()) { // try-with-resources
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
                     .setDatabaseUrl(firebaseProperty.getDatabaseUrl())
                     .build();
 
