@@ -1,6 +1,7 @@
 package com.example.jobbug.domain.chat.converter;
 
 import com.example.jobbug.domain.chat.dto.response.MessageResponse;
+import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.Message;
 import com.example.jobbug.domain.firebase.entity.FirebaseMessage;
 import com.example.jobbug.domain.chat.enums.MessageType;
@@ -16,12 +17,13 @@ public class MessageConverter {
         if(message == null) {
             return null;
         }
-        return new MessageResponse(
-                message.getId(),
-                message.getContent(),
-                message.getCreatedAt(),
-                message.isRead()
-        );
+        return MessageResponse.builder()
+                .messageId(message.getId())
+                .content(message.getContent())
+                .senderId(getSenderId(message.getSender()))
+                .timestamp(message.getCreatedAt())
+                .isRead(message.isRead())
+                .build();
     }
 
     public static FirebaseMessage mapToFirebase(Message message, FirebaseMessageData data) {
@@ -38,6 +40,20 @@ public class MessageConverter {
                 LocalDateTime.now().toInstant(ZoneOffset.UTC).toEpochMilli(),
                 data
         );
+    }
+
+    public static Message mapToEntity(FirebaseMessage message, ChatRoom chatRoom, User sender) {
+        if(message == null) {
+            return null;
+        }
+        return Message.builder()
+                .number(message.getNumber())
+                .type(message.getType())
+                .chatRoom(chatRoom)
+                .sender(sender)
+                .content(message.getContent())
+                .isRead(message.isRead())
+                .build();
     }
 
     private static Long getSenderId(User sender) {

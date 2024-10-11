@@ -6,6 +6,7 @@ import com.example.jobbug.domain.chat.dto.response.MessageResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.Message;
 import com.example.jobbug.domain.chat.enums.ChatRoomUserRole;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessage;
 import com.example.jobbug.global.domain.BaseEntity;
 
 import java.util.Comparator;
@@ -13,24 +14,20 @@ import java.util.List;
 
 public class ChatRoomConverter {
 
-    public static GetChatRoomListResponse mapToListResponse(ChatRoom chatRoom) {
+    public static GetChatRoomListResponse mapToListResponse(ChatRoom chatRoom, Message lastMessage) {
 
-        Message lastMessage = chatRoom.getMessages()
-                .stream()
-                .max(Comparator.comparing(BaseEntity::getCreatedAt))
-                .orElse(null);
         return new GetChatRoomListResponse(chatRoom.getId(), MessageConverter.mapToResponse(lastMessage));
     }
 
-    public static GetChatRoomResponse mapToResponse(ChatRoom chatRoom, ChatRoomUserRole role, List<MessageResponse> messages) {
+    public static GetChatRoomResponse mapToResponse(ChatRoom chatRoom, ChatRoomUserRole role) {
         Long reservationId = null;
         Long reviewId = null;
 
-        if(chatRoom.getReservation() != null) {
+        if (chatRoom.getReservation() != null) {
             reservationId = chatRoom.getReservation().getId();
         }
 
-        if(chatRoom.getReview() != null) {
+        if (chatRoom.getReview() != null) {
             reviewId = chatRoom.getReview().getId();
         }
 
@@ -41,7 +38,6 @@ public class ChatRoomConverter {
                 .role(role)
                 .reservationId(reservationId)
                 .reviewId(reviewId)
-                .messages(messages)
                 .build();
     }
 }

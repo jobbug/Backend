@@ -1,14 +1,18 @@
 package com.example.jobbug.domain.chat.service;
 
 import com.example.jobbug.domain.chat.converter.ChatRoomConverter;
+import com.example.jobbug.domain.chat.converter.MessageConverter;
 import com.example.jobbug.domain.chat.dto.request.CreateRoomRequest;
 import com.example.jobbug.domain.chat.dto.response.GetChatRoomListResponse;
 import com.example.jobbug.domain.chat.dto.response.GetChatRoomResponse;
 import com.example.jobbug.domain.chat.dto.response.MessageResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
+import com.example.jobbug.domain.chat.entity.Message;
 import com.example.jobbug.domain.chat.enums.ChatRoomUserRole;
 import com.example.jobbug.domain.chat.repository.ChatRoomQueryRepository;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessage;
+import com.example.jobbug.domain.firebase.service.FirebaseService;
 import com.example.jobbug.domain.post.entity.Post;
 import com.example.jobbug.domain.post.repository.PostRepository;
 import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
@@ -21,6 +25,7 @@ import com.example.jobbug.global.exception.model.ForbiddenException;
 import com.example.jobbug.global.exception.model.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.jdt.internal.compiler.util.Messages;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +35,7 @@ import java.util.List;
 public class ChatRoomService {
     private final ChatRoomQueryRepository chatRoomQueryRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final MessageService messageService;
+    private final FirebaseService firebaseService;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
@@ -38,8 +43,11 @@ public class ChatRoomService {
     public List<GetChatRoomListResponse> loadAll(Long userId) {
         return chatRoomQueryRepository.findAllByUserIdInAuthorIdOrParticipantId(userId)
                 .stream()
-                .map(ChatRoomConverter::mapToListResponse)
-                .toList();
+                .map(chatRoom -> {
+                    FirebaseMessage lastMessage = firebaseService.getLastMessageByRoomId(chatRoom.getId());
+                    Message message = MessageConverter.mapToEntity(lastMessage, chatRoom, chatRoom.getAuthor());
+                    return ChatRoomConverter.mapToListResponse(chatRoom, message);
+                }).toList();
     }
 
     @Transactional
@@ -55,8 +63,7 @@ public class ChatRoomService {
 
         ChatRoomUserRole role = chatRoom.getAuthor().getId().equals(userId) ? ChatRoomUserRole.AUTHOR : ChatRoomUserRole.PARTICIPANT;
 
-        List<MessageResponse> messages = messageService.loadMessages(roomId);
-        return ChatRoomConverter.mapToResponse(chatRoom, role, messages);
+        return ChatRoomConverter.mapToResponse(chatRoom, role);
     }
 
     // 수락자가 채팅방 생성 요청
@@ -86,7 +93,12 @@ public class ChatRoomService {
                 .status(ChatRoomStatus.DO)
                 .build());
 
-        return ChatRoomConverter.mapToListResponse(chatRoom);
+        FirebaseMessage firebaseMessage = firebaseService.getLastMessageByRoomId(chatRoom.getId());
+        User sender = firebaseMessage.getSenderId().equals(chatRoom.getAuthor().getId())
+                ? chatRoom.getAuthor() : chatRoom.getParticipant();
+        Message message = MessageConverter.mapToEntity(firebaseMessage, chatRoom, sender);
+
+        return ChatRoomConverter.mapToListResponse(chatRoom, message);
     }
 
 
