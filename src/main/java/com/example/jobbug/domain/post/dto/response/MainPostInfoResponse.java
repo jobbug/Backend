@@ -1,5 +1,6 @@
 package com.example.jobbug.domain.post.dto.response;
 
+import com.example.jobbug.domain.post.enums.PostStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class MainPostInfoResponse {
         private String bug_type;
         private String bug_name;
         private String reward;
+        private PostStatus status;
         private String addr;
         private String detail_addr;
         private double latitude;
