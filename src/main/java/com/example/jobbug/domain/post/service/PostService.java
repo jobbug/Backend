@@ -239,12 +239,13 @@ public class PostService {
     public MainPostInfoResponse getUserRequestsByStatusAndPaging(
             Long userId,
             int page,
-            int count
+            int count,
+            PostStatus status
     ) {
         User author = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
         );
-        Page<Post> pageResult = postQueryRepository.findAllByAuthorAndStatusOrderByCreatedAtDesc(userId, PostStatus.DO, PageRequest.of(page, count));
+        Page<Post> pageResult = postQueryRepository.findAllByAuthorAndStatusOrderByCreatedAtDesc(userId, status, PageRequest.of(page, count));
 
         return PostConverter.toMainPostInfoResponse(pageResult.getContent(), pageResult.getPageable(), (int) pageResult.getTotalElements());
     }
@@ -262,12 +263,13 @@ public class PostService {
     public MainPostInfoResponse getUserAcceptancesByPaging(
             Long userId,
             int page,
-            int count
+            int count,
+            PostStatus status
     ) {
         User participant = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException(NOT_FOUND_USER_EXCEPTION)
         );
-        Page<Post> pageResult = postQueryRepository.findAllByChatRoomParticipantAcceptance(userId, PageRequest.of(page, count));
+        Page<Post> pageResult = postQueryRepository.findAllByChatRoomParticipantAcceptance(userId, PageRequest.of(page, count), status);
         return PostConverter.toMainPostInfoResponse(pageResult.getContent(), pageResult.getPageable(), (int) pageResult.getTotalElements());
     }
 

@@ -43,13 +43,17 @@ public class PostQueryRepository {
         return status != null ? QPost.post.status.eq(status) : null;
     }
 
-    public Page<Post> findAllByChatRoomParticipantAcceptance(Long userId, PageRequest pageRequest) {
+    public Page<Post> findAllByChatRoomParticipantAcceptance(Long userId, PageRequest pageRequest, PostStatus status) {
         QPost post = QPost.post;
         QChatRoom chatRoom = QChatRoom.chatRoom;
 
         List<Post> posts = queryFactory.selectFrom(post)
                 .join(post.chatRooms, chatRoom)
-                .where(chatRoom.participant.id.eq(userId), chatRoom.status.eq(ChatRoomStatus.MATCHED))
+                .where(
+                        chatRoom.participant.id.eq(userId),
+                        chatRoom.status.eq(ChatRoomStatus.MATCHED),
+                        post.status.eq(status)
+                )
                 .orderBy(post.createdAt.desc())
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
