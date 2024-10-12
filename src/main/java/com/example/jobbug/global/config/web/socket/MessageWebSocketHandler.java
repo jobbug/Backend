@@ -2,6 +2,7 @@ package com.example.jobbug.global.config.web.socket;
 
 import com.example.jobbug.domain.chat.dto.request.CreateChatRequest;
 import com.example.jobbug.domain.chat.dto.request.GetChatRequest;
+import com.example.jobbug.domain.chat.dto.request.ReadChatRoomRequest;
 import com.example.jobbug.domain.chat.dto.response.GetChatResponse;
 import com.example.jobbug.domain.chat.entity.ChatRoom;
 import com.example.jobbug.domain.chat.entity.Message;
@@ -75,6 +76,9 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
                 case "message":
                     handleMessage(session, objectMapper.readValue(json, GetChatRequest.class));
                     break;
+                case "read":
+                    handleReadChatRoom(session, objectMapper.readValue(json, ReadChatRoomRequest.class));
+                    break;
                 default:
                     break;
             }
@@ -120,6 +124,12 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
                 .type("MESSAGES")
                 .messages(messages)
                 .build());
+    }
+
+    private void handleReadChatRoom(WebSocketSession session, ReadChatRoomRequest request) {
+        Long userId = (Long) session.getAttributes().get("userId");
+
+        firebaseService.readChatRoom(request.getRoomId(), request.getNumber(), userId);
     }
 
     @Override
