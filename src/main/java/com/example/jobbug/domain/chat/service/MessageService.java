@@ -68,7 +68,7 @@ public class MessageService {
                 .type(MessageType.MESSAGE)
                 .build();
         firebaseService.sendFirebaseMessage(message, null);
-        messageRepository.save(message);
+        // messageRepository.save(message);
     }
 
     public List<MessageResponse> loadMessages(Long roomId) {

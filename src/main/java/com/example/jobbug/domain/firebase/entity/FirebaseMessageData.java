@@ -2,7 +2,10 @@ package com.example.jobbug.domain.firebase.entity;
 
 import lombok.*;
 
-@Data
+import java.util.List;
+
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

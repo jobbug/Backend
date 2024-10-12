@@ -1,7 +1,6 @@
-package com.example.jobbug.global.config.web;
+package com.example.jobbug.global.config.web.socket;
 
 import com.example.jobbug.global.jwt.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;

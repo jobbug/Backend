@@ -38,6 +38,7 @@ public class SchedulerService {
         String taskId = UUID.randomUUID().toString();
         Date date = Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
 
+        log.info("Task Scheduled Date: {}", date);
         scheduledTasks.put(taskId, taskScheduler.schedule(() -> {
                     log.info("Task Run: {}", taskId);
                     firebaseService.sendFirebaseMessage(message, FirebaseMessageData.builder().build());
