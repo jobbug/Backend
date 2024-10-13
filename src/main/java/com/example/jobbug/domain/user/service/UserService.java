@@ -71,7 +71,7 @@ public class UserService {
         cookie.setPath("/");  // 삭제할 쿠키의 경로
         cookie.setMaxAge(0);  // 만료시간을 0으로 설정
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);  // HTTPS 사용 시 true로 설정
+//        cookie.setSecure(true);  // HTTPS 사용 시 true로 설정
         response.addCookie(cookie);
     }
 
