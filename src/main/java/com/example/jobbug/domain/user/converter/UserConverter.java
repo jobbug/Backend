@@ -36,6 +36,7 @@ public class UserConverter {
         return GetUserProfileResponse.builder()
                 .userId(user.getId())
                 .nickname(user.getNickname())
+                .profileImageUrl(user.getProfile())
                 .addr(user.getAddr())
                 .totalRequests(totalRequests)
                 .successfulAcceptances(successfulAcceptances)

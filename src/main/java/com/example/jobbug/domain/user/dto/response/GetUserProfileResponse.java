@@ -11,6 +11,7 @@ import java.util.List;
 public class GetUserProfileResponse {
     private Long userId;
     private String nickname;
+    private String profileImageUrl;
     private String addr;
     private int totalRequests;
     private int successfulAcceptances;
