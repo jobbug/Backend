@@ -21,14 +21,22 @@ public class ReservationRequest {
     private String endTime;
 
     public Reservation toEntity(ChatRoom chatRoom) {
+        // 만약 현재 시간보다 이전일 경우 다음 날짜로 설정
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.parse(startTime));
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.parse(endTime));
+        if (LocalTime.parse(startTime).isBefore(LocalTime.now())) {
+            start = start.plusDays(1);
+            end = end.plusDays(1);
+        }
+
         return Reservation.builder()
                 .id(null)
                 .chatRoom(chatRoom)
                 .post(chatRoom.getPost())
                 .address(address)
                 .addressDetail(addressDetail)
-                .startTime(LocalDateTime.of(LocalDate.now(), LocalTime.parse(startTime)))
-                .endTime(LocalDateTime.of(LocalDate.now(), LocalTime.parse(endTime)))
+                .startTime(start)
+                .endTime(end)
                 .build();
     }
 

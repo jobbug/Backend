@@ -1,12 +1,16 @@
 package com.example.jobbug.domain.reservation.service;
 
 import com.example.jobbug.domain.chat.entity.ChatRoom;
+import com.example.jobbug.domain.chat.entity.Message;
+import com.example.jobbug.domain.chat.enums.MessageType;
 import com.example.jobbug.domain.chat.repository.ChatRoomRepository;
-import com.example.jobbug.domain.post.entity.Post;
-import com.example.jobbug.domain.post.repository.PostRepository;
+import com.example.jobbug.domain.chat.util.MessageIdGenerator;
+import com.example.jobbug.domain.firebase.entity.FirebaseMessageData;
+import com.example.jobbug.domain.firebase.service.FirebaseService;
 import com.example.jobbug.domain.reservation.dto.request.ReservationRequest;
 import com.example.jobbug.domain.reservation.dto.response.CreateReservationResponse;
 import com.example.jobbug.domain.reservation.dto.response.GetReservationResponse;
+import com.example.jobbug.domain.reservation.entity.ChatRoomStatus;
 import com.example.jobbug.domain.reservation.entity.Reservation;
 import com.example.jobbug.domain.reservation.repository.ReservationRepository;
 import com.example.jobbug.domain.user.entity.User;
@@ -26,7 +30,11 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ReservationRepository reservationRepository;
-    private final PostRepository postRepository;
+
+    private final FirebaseService firebaseService;
+    private final SchedulerService schedulerService;
+
+    private final MessageIdGenerator messageIdGenerator;
 
     @Transactional
     public CreateReservationResponse createReservation(Long userId, ReservationRequest request) {
@@ -44,6 +52,36 @@ public class ReservationService {
 
         Reservation reservation = reservationRepository.save(
                 request.toEntity(chatRoom)
+        );
+
+        // 예약 이벤트
+        long number = messageIdGenerator.nextId();
+
+        Message message = Message.builder()
+                .number(number)
+                .chatRoom(chatRoom)
+                .content("새로운 예약 요청")
+                .sender(null)
+                .isRead(false)
+                .type(MessageType.RESERVATION)
+                .build();
+
+        firebaseService.sendFirebaseMessage(
+                message, FirebaseMessageData.builder()
+                        .reservationId(reservation.getId())
+                        .build()
+        );
+
+        // 후기 알림 이벤트
+        schedulerService.scheduleMessage(
+                reservation.getEndTime(),
+                Message.builder()
+                        .chatRoom(chatRoom)
+                        .content("후기 작성 알림")
+                        .sender(null)
+                        .isRead(false)
+                        .type(MessageType.REVIEW)
+                        .build()
         );
 
         return CreateReservationResponse.fromEntity(
@@ -68,7 +106,7 @@ public class ReservationService {
     }
 
     @Transactional
-    public boolean acceptReservation(Long userId, Long reservationId) {
+    public void acceptReservation(Long userId, Long reservationId) {
 
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new NotFoundException(ErrorCode.NOT_FOUND_USER_EXCEPTION)
@@ -78,14 +116,34 @@ public class ReservationService {
                 () -> new NotFoundException(ErrorCode.NOT_FOUND_RESERVATION_EXCEPTION)
         );
 
-        ChatRoom room = reservation.getChatRoom();
+        ChatRoom chatRoom = reservation.getChatRoom();
 
-        if (!room.getParticipant().getId().equals(userId)) {
+        if (!chatRoom.getParticipant().getId().equals(userId)) {
             throw new JobbugException(ErrorCode.RESERVATION_ACCEPT_NOT_ALLOWED_EXCEPTION);
         }
 
-        room.matchReservation();
+        if(chatRoom.getStatus() == ChatRoomStatus.MATCHED) {
+            throw new JobbugException(ErrorCode.RESERVATION_ALREADY_MATCHED_EXCEPTION);
+        }
 
-        return true;
+        chatRoom.matchReservation();
+
+        long number = messageIdGenerator.nextId();
+
+        Message message = Message.builder()
+                .number(number)
+                .chatRoom(chatRoom)
+                .content("매칭 성공")
+                .sender(null)
+                .isRead(false)
+                .type(MessageType.MATCHED)
+                .build();
+
+        firebaseService.sendFirebaseMessage(
+                message, FirebaseMessageData.builder()
+                        .reservationId(reservation.getId())
+                        .phone(chatRoom.getAuthor().getPhone())
+                        .build()
+        );
     }
 }

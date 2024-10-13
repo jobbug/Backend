@@ -15,5 +15,4 @@ public class GetChatRoomResponse {
     private ChatRoomUserRole role;
     private Long reservationId;
     private Long reviewId;
-    private List<MessageResponse> messages;
 }

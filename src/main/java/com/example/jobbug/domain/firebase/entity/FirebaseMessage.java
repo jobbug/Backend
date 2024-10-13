@@ -1,14 +1,11 @@
-package com.example.jobbug.domain.chat.entity.firebase;
+package com.example.jobbug.domain.firebase.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.example.jobbug.domain.chat.enums.MessageType;
+import lombok.*;
 
-@Getter
-@ToString
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class FirebaseMessage {
     private Long number;
     private MessageType type;
@@ -16,6 +13,8 @@ public class FirebaseMessage {
     private Long roomId;
     private String senderName;
     private String content;
+    private boolean isRead;
     private Long timestamp;
+    private FirebaseMessageData data;
 }
 

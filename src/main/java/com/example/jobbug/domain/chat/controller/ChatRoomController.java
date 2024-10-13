@@ -39,7 +39,7 @@ public class ChatRoomController {
                 SuccessCode.GET_ROOM_SUCCESS,
                 new ListWrapperResponse(chatRoomService.loadAll(userId))
         );
-        
+
     }
 
     @GetMapping("/{roomId}")
