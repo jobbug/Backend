@@ -34,6 +34,7 @@ public class PostConverter {
                 .title(post.getTitle())
                 .bug_type(post.getBugType())
                 .bug_name(post.getBugName())
+                .status(post.getStatus())
                 .reward(post.getReward())
                 .addr(post.getAddr())
                 .detail_addr(post.getDetailAddr())

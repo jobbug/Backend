@@ -157,10 +157,11 @@ public class PostController {
     public ResponseEntity<?> getLoginUserRequests(
             @UserId Long userId,
             @RequestParam int page,
-            @RequestParam int count
+            @RequestParam int count,
+            @RequestParam PostStatus status
     ) {
         try {
-            return SuccessResponse.success(GET_USER_REQUESTS_SUCCESS, postService.getUserRequestsByStatusAndPaging(userId, page, count));
+            return SuccessResponse.success(GET_USER_REQUESTS_SUCCESS, postService.getUserRequestsByStatusAndPaging(userId, page, count, status));
         } catch (NotFoundException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
@@ -170,10 +171,11 @@ public class PostController {
     public ResponseEntity<?> getLoginUserAcceptances(
             @UserId Long userId,
             @RequestParam int page,
-            @RequestParam int count
+            @RequestParam int count,
+            @RequestParam PostStatus status
     ) {
         try {
-            return SuccessResponse.success(SuccessCode.GET_USER_ACCEPTANCES_SUCCESS, postService.getUserAcceptancesByPaging(userId, page, count));
+            return SuccessResponse.success(SuccessCode.GET_USER_ACCEPTANCES_SUCCESS, postService.getUserAcceptancesByPaging(userId, page, count, status));
         } catch (NotFoundException e) {
             return ErrorResponse.error(e.getErrorCode());
         }
