@@ -60,11 +60,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 비활성화 (JWT 사용)
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 비활성화
-                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .requestCache(AbstractHttpConfigurer::disable) // 요청 캐시 비활성화
                 .authorizeHttpRequests(auth -> auth // 접근 uri 권한 관리.requestMatchers("/auth/google/**").permitAll()
                                 .requestMatchers(adminRequestMatchers).hasAnyRole("ADMIN")
