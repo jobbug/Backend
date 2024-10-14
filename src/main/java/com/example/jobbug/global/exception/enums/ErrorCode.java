@@ -28,6 +28,7 @@ public enum ErrorCode {
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, "E401", "인증 정보가 유효하지 않습니다."),
 
     // 403
+    AUTHORIZATION_FAILED_EXCEPTION(HttpStatus.FORBIDDEN, "E403", "해당 요청을 수행할 권한이 없습니다."),
     NOT_PARTICIPANT_EXCEPTION(HttpStatus.FORBIDDEN, "E102", "해당 채팅방의 참여자가 아닙니다."),
     RESERVATION_CREATION_NOT_ALLOWED_EXCEPTION(HttpStatus.FORBIDDEN, "E050", "해당 예약을 작성할 권한이 없습니다."),
     RESERVATION_ACCESS_NOT_ALLOWED_EXCEPTION(HttpStatus.FORBIDDEN, "E052", "해당 예약을 조회할 권한이 없습니다."),

@@ -2,12 +2,16 @@ package com.example.jobbug.global.config;
 
 import com.example.jobbug.domain.auth.application.OAuthLoginFailureHandler;
 import com.example.jobbug.domain.auth.application.OAuthLoginSuccessHandler;
+import com.example.jobbug.global.dto.ErrorResponse;
+import com.example.jobbug.global.exception.enums.ErrorCode;
 import com.example.jobbug.global.jwt.JWTFilter;
 import com.example.jobbug.global.jwt.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -21,7 +25,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -62,6 +65,19 @@ public class SecurityConfig {
         http
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
+                .exceptionHandling(exceptionHandlingConfigurer ->
+                        exceptionHandlingConfigurer
+                                .authenticationEntryPoint((request, response, authException) -> {
+                                    ObjectMapper mapper = new ObjectMapper();
+                                    ErrorCode errorCode = ErrorCode.AUTHORIZATION_FAILED_EXCEPTION;
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    response.setCharacterEncoding("UTF-8");
+                                    response.setStatus(errorCode.getHttpStatus().value());
+
+                                    response.getWriter()
+                                            .write(mapper.writeValueAsString(ErrorResponse.error(errorCode)));
+                                })
+                ) // 접근 거부 핸들러 설정 - 함수나 스프링 빈으로 분리해도 될듯
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용 비활성화 (JWT 사용)
                 .formLogin(AbstractHttpConfigurer::disable) // 폼 로그인 비활성화
                 .httpBasic(AbstractHttpConfigurer::disable) // 기본 인증 비활성화
