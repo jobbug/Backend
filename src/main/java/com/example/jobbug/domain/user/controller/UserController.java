@@ -26,7 +26,7 @@ public class UserController {
     @PostMapping(value = "/register", consumes = {"multipart/form-data"})
     public ResponseEntity<?> registerUser(
             @RequestHeader String registerToken,
-            @RequestPart(value = "image") MultipartFile profileImage,
+            @RequestPart(value = "image", required = false) MultipartFile profileImage,
             @RequestPart(value = "userInfo") UserRegisterRequest request) {
         try {
             return SuccessResponse.success(REGISTER_SUCCESS, userService.registerUser(registerToken, profileImage, request));
